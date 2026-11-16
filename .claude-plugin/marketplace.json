@@ -1,0 +1,14 @@
+{
+  "name": "agent-cite-check",
+  "description": "Check an agent's report against local files without another model.",
+  "owner": {
+    "name": "keienhrri-bit"
+  },
+  "plugins": [
+    {
+      "name": "agent-cite-check",
+      "source": "./",
+      "description": "Verify the file:line sources, declared numbers and file changes in a subagent's report. Zero dependencies, no model calls."
+    }
+  ]
+}

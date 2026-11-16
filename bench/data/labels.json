@@ -1,0 +1,5695 @@
+{
+ "generated": "bench/generate.js",
+ "seed": 20261116,
+ "tolerance": 3,
+ "reports": [
+  {
+   "file": "report_01.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "2",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "3",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "4",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "5",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "6",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "7",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "8",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "9",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "10",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "11",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "12",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "13",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "14",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "15",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "16",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "17",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "18",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "19",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "20",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "21",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "22",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "23",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "24",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "25",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "26",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "27",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "28",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "29",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "30",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "31",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "32",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "33",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "34",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "35",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "36",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "37",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "38",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "39",
+     "label": "good",
+     "category": "shift"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "good",
+     "category": "num_count"
+    },
+    {
+     "id": "n2",
+     "label": "good",
+     "category": "num_lines"
+    },
+    {
+     "id": "n3",
+     "label": "good",
+     "category": "num_rows"
+    },
+    {
+     "id": "n4",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n5",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n6",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n7",
+     "label": "bad",
+     "category": "num_off_by_rounding"
+    }
+   ]
+  },
+  {
+   "file": "report_02.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "2",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "3",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "4",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "5",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "6",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "7",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "8",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "9",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "10",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "11",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "12",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "13",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "14",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "15",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "16",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "17",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "18",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "19",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "20",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "21",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "22",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "23",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "24",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "25",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "26",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "27",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "28",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "29",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "30",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "31",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "32",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "33",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "34",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "35",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "36",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "37",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "38",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "39",
+     "label": "bad",
+     "category": "alter_digit"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n2",
+     "label": "good",
+     "category": "num_lines"
+    },
+    {
+     "id": "n3",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n4",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n5",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n6",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n7",
+     "label": "good",
+     "category": "num_avg"
+    }
+   ]
+  },
+  {
+   "file": "report_03.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "2",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "3",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "4",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "5",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "6",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "7",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "8",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "9",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "10",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "11",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "12",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "13",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "14",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "15",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "16",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "17",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "18",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "19",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "20",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "21",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "22",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "23",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "24",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "25",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "26",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "27",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "28",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "29",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "30",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "31",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "32",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "33",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "34",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "35",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "36",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "37",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "38",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "39",
+     "label": "bad",
+     "category": "wrong_line"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n2",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n3",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n4",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n5",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n6",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n7",
+     "label": "good",
+     "category": "num_avg"
+    }
+   ]
+  },
+  {
+   "file": "report_04.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "2",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "3",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "4",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "5",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "6",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "7",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "8",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "9",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "10",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "11",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "12",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "13",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "14",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "15",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "16",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "17",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "18",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "19",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "20",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "21",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "22",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "23",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "24",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "25",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "26",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "27",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "28",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "29",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "30",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "31",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "32",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "33",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "34",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "35",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "36",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "37",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "38",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "39",
+     "label": "bad",
+     "category": "out_of_range"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n2",
+     "label": "good",
+     "category": "num_lines"
+    },
+    {
+     "id": "n3",
+     "label": "good",
+     "category": "num_rows"
+    },
+    {
+     "id": "n4",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n5",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n6",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n7",
+     "label": "good",
+     "category": "num_avg"
+    }
+   ]
+  },
+  {
+   "file": "report_05.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "2",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "3",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "4",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "5",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "6",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "7",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "8",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "9",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "10",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "11",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "12",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "13",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "14",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "15",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "16",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "17",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "18",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "19",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "20",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "21",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "22",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "23",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "24",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "25",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "26",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "27",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "28",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "29",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "30",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "31",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "32",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "33",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "34",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "35",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "36",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "37",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "38",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "39",
+     "label": "bad",
+     "category": "invented"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n2",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n3",
+     "label": "good",
+     "category": "num_rows"
+    },
+    {
+     "id": "n4",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n5",
+     "label": "good",
+     "category": "num_sum_decimal"
+    },
+    {
+     "id": "n6",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n7",
+     "label": "bad",
+     "category": "num_off_by_rounding"
+    }
+   ]
+  },
+  {
+   "file": "report_06.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "2",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "3",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "4",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "5",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "6",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "7",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "8",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "9",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "10",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "11",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "12",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "13",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "14",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "15",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "16",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "17",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "18",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "19",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "20",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "21",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "22",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "23",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "24",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "25",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "26",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "27",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "28",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "29",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "30",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "31",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "32",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "33",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "34",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "35",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "36",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "37",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "38",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "39",
+     "label": "good",
+     "category": "width"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "good",
+     "category": "num_count"
+    },
+    {
+     "id": "n2",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n3",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n4",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n5",
+     "label": "good",
+     "category": "num_sum_decimal"
+    },
+    {
+     "id": "n6",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n7",
+     "label": "bad",
+     "category": "num_off_by_rounding"
+    }
+   ]
+  },
+  {
+   "file": "report_07.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "2",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "3",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "4",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "5",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "6",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "7",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "8",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "9",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "10",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "11",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "12",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "13",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "14",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "15",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "16",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "17",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "18",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "19",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "20",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "21",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "22",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "23",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "24",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "25",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "26",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "27",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "28",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "29",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "30",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "31",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "32",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "33",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "34",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "35",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "36",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "37",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "38",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "39",
+     "label": "good",
+     "category": "exact"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "good",
+     "category": "num_count"
+    },
+    {
+     "id": "n2",
+     "label": "good",
+     "category": "num_lines"
+    },
+    {
+     "id": "n3",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n4",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n5",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n6",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n7",
+     "label": "bad",
+     "category": "num_off_by_rounding"
+    }
+   ]
+  },
+  {
+   "file": "report_08.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "2",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "3",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "4",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "5",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "6",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "7",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "8",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "9",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "10",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "11",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "12",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "13",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "14",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "15",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "16",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "17",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "18",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "19",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "20",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "21",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "22",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "23",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "24",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "25",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "26",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "27",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "28",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "29",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "30",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "31",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "32",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "33",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "34",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "35",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "36",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "37",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "38",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "39",
+     "label": "bad",
+     "category": "no_quote"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n2",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n3",
+     "label": "good",
+     "category": "num_rows"
+    },
+    {
+     "id": "n4",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n5",
+     "label": "good",
+     "category": "num_sum_decimal"
+    },
+    {
+     "id": "n6",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n7",
+     "label": "good",
+     "category": "num_avg"
+    }
+   ]
+  },
+  {
+   "file": "report_09.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "2",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "3",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "4",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "5",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "6",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "7",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "8",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "9",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "10",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "11",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "12",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "13",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "14",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "15",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "16",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "17",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "18",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "19",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "20",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "21",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "22",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "23",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "24",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "25",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "26",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "27",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "28",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "29",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "30",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "31",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "32",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "33",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "34",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "35",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "36",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "37",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "38",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "39",
+     "label": "good",
+     "category": "quotes"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "good",
+     "category": "num_count"
+    },
+    {
+     "id": "n2",
+     "label": "good",
+     "category": "num_lines"
+    },
+    {
+     "id": "n3",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n4",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n5",
+     "label": "good",
+     "category": "num_sum_decimal"
+    },
+    {
+     "id": "n6",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n7",
+     "label": "good",
+     "category": "num_avg"
+    }
+   ]
+  },
+  {
+   "file": "report_10.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "2",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "3",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "4",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "5",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "6",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "7",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "8",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "9",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "10",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "11",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "12",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "13",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "14",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "15",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "16",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "17",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "18",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "19",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "20",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "21",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "22",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "23",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "24",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "25",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "26",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "27",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "28",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "29",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "30",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "31",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "32",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "33",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "34",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "35",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "36",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "37",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "38",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "39",
+     "label": "good",
+     "category": "wrapped"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "good",
+     "category": "num_count"
+    },
+    {
+     "id": "n2",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n3",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n4",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n5",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n6",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n7",
+     "label": "bad",
+     "category": "num_off_by_rounding"
+    }
+   ]
+  },
+  {
+   "file": "report_11.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "2",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "3",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "4",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "5",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "6",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "7",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "8",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "9",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "10",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "11",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "12",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "13",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "14",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "15",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "16",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "17",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "18",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "19",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "20",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "21",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "22",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "23",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "24",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "25",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "26",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "27",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "28",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "29",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "30",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "31",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "32",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "33",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "34",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "35",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "36",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "37",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "38",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "39",
+     "label": "good",
+     "category": "spacing"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "good",
+     "category": "num_count"
+    },
+    {
+     "id": "n2",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n3",
+     "label": "good",
+     "category": "num_rows"
+    },
+    {
+     "id": "n4",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n5",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n6",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n7",
+     "label": "bad",
+     "category": "num_off_by_rounding"
+    }
+   ]
+  },
+  {
+   "file": "report_12.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "2",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "3",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "4",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "5",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "6",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "7",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "8",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "9",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "10",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "11",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "12",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "13",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "14",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "15",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "16",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "17",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "18",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "19",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "20",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "21",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "22",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "23",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "24",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "25",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "26",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "27",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "28",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "29",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "30",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "31",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "32",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "33",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "34",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "35",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "36",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "37",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "38",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "39",
+     "label": "bad",
+     "category": "alter_digit"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "good",
+     "category": "num_count"
+    },
+    {
+     "id": "n2",
+     "label": "good",
+     "category": "num_lines"
+    },
+    {
+     "id": "n3",
+     "label": "good",
+     "category": "num_rows"
+    },
+    {
+     "id": "n4",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n5",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n6",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n7",
+     "label": "bad",
+     "category": "num_off_by_rounding"
+    }
+   ]
+  },
+  {
+   "file": "report_13.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "2",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "3",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "4",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "5",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "6",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "7",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "8",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "9",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "10",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "11",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "12",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "13",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "14",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "15",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "16",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "17",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "18",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "19",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "20",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "21",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "22",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "23",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "24",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "25",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "26",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "27",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "28",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "29",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "30",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "31",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "32",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "33",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "34",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "35",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "36",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "37",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "38",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "39",
+     "label": "good",
+     "category": "spacing"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "good",
+     "category": "num_count"
+    },
+    {
+     "id": "n2",
+     "label": "good",
+     "category": "num_lines"
+    },
+    {
+     "id": "n3",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n4",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n5",
+     "label": "good",
+     "category": "num_sum_decimal"
+    },
+    {
+     "id": "n6",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n7",
+     "label": "bad",
+     "category": "num_off_by_rounding"
+    }
+   ]
+  },
+  {
+   "file": "report_14.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "2",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "3",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "4",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "5",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "6",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "7",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "8",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "9",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "10",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "11",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "12",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "13",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "14",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "15",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "16",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "17",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "18",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "19",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "20",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "21",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "22",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "23",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "24",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "25",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "26",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "27",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "28",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "29",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "30",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "31",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "32",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "33",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "34",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "35",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "36",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "37",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "38",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "39",
+     "label": "bad",
+     "category": "fake_file"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "good",
+     "category": "num_count"
+    },
+    {
+     "id": "n2",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n3",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n4",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n5",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n6",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n7",
+     "label": "good",
+     "category": "num_avg"
+    }
+   ]
+  },
+  {
+   "file": "report_15.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "2",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "3",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "4",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "5",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "6",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "7",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "8",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "9",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "10",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "11",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "12",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "13",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "14",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "15",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "16",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "17",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "18",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "19",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "20",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "21",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "22",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "23",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "24",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "25",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "26",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "27",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "28",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "29",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "30",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "31",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "32",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "33",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "34",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "35",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "36",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "37",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "38",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "39",
+     "label": "good",
+     "category": "exact"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n2",
+     "label": "good",
+     "category": "num_lines"
+    },
+    {
+     "id": "n3",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n4",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n5",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n6",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n7",
+     "label": "bad",
+     "category": "num_off_by_rounding"
+    }
+   ]
+  },
+  {
+   "file": "report_16.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "2",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "3",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "4",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "5",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "6",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "7",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "8",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "9",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "10",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "11",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "12",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "13",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "14",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "15",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "16",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "17",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "18",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "19",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "20",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "21",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "22",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "23",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "24",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "25",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "26",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "27",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "28",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "29",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "30",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "31",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "32",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "33",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "34",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "35",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "36",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "37",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "38",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "39",
+     "label": "good",
+     "category": "quotes"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "good",
+     "category": "num_count"
+    },
+    {
+     "id": "n2",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n3",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n4",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n5",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n6",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n7",
+     "label": "good",
+     "category": "num_avg"
+    }
+   ]
+  },
+  {
+   "file": "report_17.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "2",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "3",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "4",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "5",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "6",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "7",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "8",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "9",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "10",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "11",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "12",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "13",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "14",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "15",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "16",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "17",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "18",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "19",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "20",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "21",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "22",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "23",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "24",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "25",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "26",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "27",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "28",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "29",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "30",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "31",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "32",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "33",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "34",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "35",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "36",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "37",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "38",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "39",
+     "label": "bad",
+     "category": "neighbor_line"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n2",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n3",
+     "label": "good",
+     "category": "num_rows"
+    },
+    {
+     "id": "n4",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n5",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n6",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n7",
+     "label": "good",
+     "category": "num_avg"
+    }
+   ]
+  },
+  {
+   "file": "report_18.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "2",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "3",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "4",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "5",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "6",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "7",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "8",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "9",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "10",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "11",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "12",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "13",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "14",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "15",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "16",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "17",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "18",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "19",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "20",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "21",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "22",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "23",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "24",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "25",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "26",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "27",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "28",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "29",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "30",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "31",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "32",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "33",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "34",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "35",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "36",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "37",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "38",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "39",
+     "label": "bad",
+     "category": "no_quote"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "good",
+     "category": "num_count"
+    },
+    {
+     "id": "n2",
+     "label": "good",
+     "category": "num_lines"
+    },
+    {
+     "id": "n3",
+     "label": "good",
+     "category": "num_rows"
+    },
+    {
+     "id": "n4",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n5",
+     "label": "good",
+     "category": "num_sum_decimal"
+    },
+    {
+     "id": "n6",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n7",
+     "label": "bad",
+     "category": "num_off_by_rounding"
+    }
+   ]
+  },
+  {
+   "file": "report_19.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "2",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "3",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "4",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "5",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "6",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "7",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "8",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "9",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "10",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "11",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "12",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "13",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "14",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "15",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "16",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "17",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "18",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "19",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "20",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "21",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "22",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "23",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "24",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "25",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "26",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "27",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "28",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "29",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "30",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "31",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "32",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "33",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "34",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "35",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "36",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "37",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "38",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "39",
+     "label": "bad",
+     "category": "alter_digit"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "good",
+     "category": "num_count"
+    },
+    {
+     "id": "n2",
+     "label": "good",
+     "category": "num_lines"
+    },
+    {
+     "id": "n3",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n4",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n5",
+     "label": "good",
+     "category": "num_sum_decimal"
+    },
+    {
+     "id": "n6",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n7",
+     "label": "bad",
+     "category": "num_off_by_rounding"
+    }
+   ]
+  },
+  {
+   "file": "report_20.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "2",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "3",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "4",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "5",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "6",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "7",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "8",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "9",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "10",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "11",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "12",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "13",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "14",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "15",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "16",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "17",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "18",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "19",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "20",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "21",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "22",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "23",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "24",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "25",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "26",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "27",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "28",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "29",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "30",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "31",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "32",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "33",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "34",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "35",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "36",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "37",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "38",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "39",
+     "label": "good",
+     "category": "wrapped"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n2",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n3",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n4",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n5",
+     "label": "good",
+     "category": "num_sum_decimal"
+    },
+    {
+     "id": "n6",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n7",
+     "label": "bad",
+     "category": "num_off_by_rounding"
+    }
+   ]
+  },
+  {
+   "file": "report_21.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "2",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "3",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "4",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "5",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "6",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "7",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "8",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "9",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "10",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "11",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "12",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "13",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "14",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "15",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "16",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "17",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "18",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "19",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "20",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "21",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "22",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "23",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "24",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "25",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "26",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "27",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "28",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "29",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "30",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "31",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "32",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "33",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "34",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "35",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "36",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "37",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "38",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "39",
+     "label": "bad",
+     "category": "alter_omit"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n2",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n3",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n4",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n5",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n6",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n7",
+     "label": "good",
+     "category": "num_avg"
+    }
+   ]
+  },
+  {
+   "file": "report_22.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "2",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "3",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "4",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "5",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "6",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "7",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "8",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "9",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "10",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "11",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "12",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "13",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "14",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "15",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "16",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "17",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "18",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "19",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "20",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "21",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "22",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "23",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "24",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "25",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "26",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "27",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "28",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "29",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "30",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "31",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "32",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "33",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "34",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "35",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "36",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "37",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "38",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "39",
+     "label": "good",
+     "category": "shift"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "good",
+     "category": "num_count"
+    },
+    {
+     "id": "n2",
+     "label": "good",
+     "category": "num_lines"
+    },
+    {
+     "id": "n3",
+     "label": "good",
+     "category": "num_rows"
+    },
+    {
+     "id": "n4",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n5",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n6",
+     "label": "good",
+     "category": "num_sum"
+    },
+    {
+     "id": "n7",
+     "label": "good",
+     "category": "num_avg"
+    }
+   ]
+  },
+  {
+   "file": "report_23.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "2",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "3",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "4",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "5",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "6",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "7",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "8",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "9",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "10",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "11",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "12",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "13",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "14",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "15",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "16",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "17",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "18",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "19",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "20",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "21",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "22",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "23",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "24",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "25",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "26",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "27",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "28",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "29",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "30",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "31",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "32",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "33",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "34",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "35",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "36",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "37",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "38",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "39",
+     "label": "good",
+     "category": "wrapped"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "good",
+     "category": "num_count"
+    },
+    {
+     "id": "n2",
+     "label": "good",
+     "category": "num_lines"
+    },
+    {
+     "id": "n3",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n4",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n5",
+     "label": "good",
+     "category": "num_sum_decimal"
+    },
+    {
+     "id": "n6",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n7",
+     "label": "bad",
+     "category": "num_off_by_rounding"
+    }
+   ]
+  },
+  {
+   "file": "report_24.md",
+   "citations": [
+    {
+     "id": "1",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "2",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "3",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "4",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "5",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "6",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "7",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "8",
+     "label": "bad",
+     "category": "wrong_line"
+    },
+    {
+     "id": "9",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "10",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "11",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "12",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "13",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "14",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "15",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "16",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "17",
+     "label": "bad",
+     "category": "alter_digit"
+    },
+    {
+     "id": "18",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "19",
+     "label": "bad",
+     "category": "out_of_range"
+    },
+    {
+     "id": "20",
+     "label": "bad",
+     "category": "alter_omit"
+    },
+    {
+     "id": "21",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "22",
+     "label": "good",
+     "category": "width"
+    },
+    {
+     "id": "23",
+     "label": "bad",
+     "category": "alter_name"
+    },
+    {
+     "id": "24",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "25",
+     "label": "good",
+     "category": "exact"
+    },
+    {
+     "id": "26",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "27",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "28",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "29",
+     "label": "good",
+     "category": "spacing"
+    },
+    {
+     "id": "30",
+     "label": "bad",
+     "category": "fake_file"
+    },
+    {
+     "id": "31",
+     "label": "bad",
+     "category": "no_quote"
+    },
+    {
+     "id": "32",
+     "label": "bad",
+     "category": "neighbor_line"
+    },
+    {
+     "id": "33",
+     "label": "bad",
+     "category": "invented"
+    },
+    {
+     "id": "34",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "35",
+     "label": "good",
+     "category": "shift"
+    },
+    {
+     "id": "36",
+     "label": "good",
+     "category": "duplicate"
+    },
+    {
+     "id": "37",
+     "label": "good",
+     "category": "quotes"
+    },
+    {
+     "id": "38",
+     "label": "good",
+     "category": "wrapped"
+    },
+    {
+     "id": "39",
+     "label": "bad",
+     "category": "alter_digit"
+    }
+   ],
+   "numbers": [
+    {
+     "id": "n1",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n2",
+     "label": "good",
+     "category": "num_lines"
+    },
+    {
+     "id": "n3",
+     "label": "good",
+     "category": "num_rows"
+    },
+    {
+     "id": "n4",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n5",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n6",
+     "label": "bad",
+     "category": "num_off_by_small"
+    },
+    {
+     "id": "n7",
+     "label": "good",
+     "category": "num_avg"
+    }
+   ]
+  }
+ ]
+}

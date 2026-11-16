@@ -1,0 +1,43 @@
+{
+  "name": "agent-cite-check",
+  "version": "0.1.0",
+  "description": "Check an AI agent's report against your local files: every quoted line, every declared number, every changed file. No model calls.",
+  "type": "module",
+  "bin": {
+    "agent-cite-check": "bin/agent-cite-check.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "templates/",
+    "skills/",
+    "codex/",
+    "README.md",
+    "README.zh-CN.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "bench": "node bench/run.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "agent",
+    "citation",
+    "verification",
+    "claude-code",
+    "codex",
+    "gemini",
+    "hallucination",
+    "grounding",
+    "subagent"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/keienhrri-bit/agent-cite-check.git"
+  },
+  "license": "MIT"
+}

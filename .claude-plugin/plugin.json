@@ -1,0 +1,14 @@
+{
+  "name": "agent-cite-check",
+  "displayName": "Agent Cite Check",
+  "version": "0.1.0",
+  "description": "Check a subagent's or another agent's report against your local files: every quoted line, every declared number, every changed file. No model calls.",
+  "author": {
+    "name": "keienhrri-bit",
+    "url": "https://github.com/keienhrri-bit"
+  },
+  "homepage": "https://github.com/keienhrri-bit/agent-cite-check",
+  "repository": "https://github.com/keienhrri-bit/agent-cite-check",
+  "license": "MIT",
+  "keywords": ["subagent", "verification", "citations", "acceptance", "delegation", "codex", "gemini", "hallucination"]
+}
