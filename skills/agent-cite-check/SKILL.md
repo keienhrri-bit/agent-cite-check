@@ -13,9 +13,9 @@ It checks text, not meaning. It does not judge whether X supports a conclusion, 
 
 Try in this order and use the first that works:
 
-1. `agent-cite-check --version`
-2. `node <this skill's folder>/../../bin/agent-cite-check.js --version` (the skill came with the plugin or a clone of the repository)
-3. Neither works: tell the user to clone https://github.com/keienhrri-bit/agent-cite-check (Node 20 or newer, no dependencies) and use `node <clone>/bin/agent-cite-check.js`.
+1. `agent-cite-check --version` (the Claude Code plugin puts the command on PATH, and so does an npm install)
+2. `node <this skill's folder>/../../bin/agent-cite-check.js --version` (the skill came with a clone of the repository)
+3. Neither works (for example, the skill was installed on its own with `npx skills add`): ask the user whether to install the command with `npm install -g github:keienhrri-bit/agent-cite-check` (Node 20 or newer, no dependencies, nothing to build), then use `agent-cite-check`.
 
 Below, `acc` stands for whichever command worked.
 

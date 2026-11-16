@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
 import { main } from '../src/cli.js';
 import { makeWorkspace } from './helpers.js';
 
@@ -20,6 +21,22 @@ test('quickstart example fails with the planted problems', () => {
   assert.equal(r.code, 1);
   assert.match(r.out, /Citations 5: 2 match, 3 do not/);
   assert.match(r.out, /claimed 13, recomputed 12/);
+});
+
+// The Claude Code plugin puts bin/ on PATH. Plain `agent-cite-check` must reach Node through the
+// launchers: the .cmd on Windows (else Windows Script Host opens the .js), the sh script elsewhere.
+test('PATH launchers run the CLI and pass the exit code through', () => {
+  const bin = path.join(here, '..', 'bin');
+  const args = [path.join(quick, 'report.md'), '--root', path.join(quick, 'workspace')];
+  const launch = (extra) => (process.platform === 'win32'
+    ? spawnSync('cmd.exe', ['/d', '/c', path.join(bin, 'agent-cite-check.cmd'), ...extra], { encoding: 'utf8' })
+    : spawnSync('sh', [path.join(bin, 'agent-cite-check'), ...extra], { encoding: 'utf8' }));
+  const v = launch(['--version']);
+  assert.equal(v.status, 0);
+  assert.equal(v.stdout.trim(), JSON.parse(fs.readFileSync(path.join(here, '..', 'package.json'), 'utf8')).version);
+  const r = launch(args);
+  assert.equal(r.status, 1);
+  assert.match(r.stdout, /FAIL \(4 problems\)/);
 });
 
 test('exit 0 on a clean report, JSON output', () => {

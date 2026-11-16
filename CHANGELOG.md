@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- PATH launchers `bin/agent-cite-check.cmd` and `bin/agent-cite-check`. The Claude Code plugin puts `bin/` on PATH; on Windows a bare `agent-cite-check` resolved to `agent-cite-check.js` and was opened by Windows Script Host instead of Node. Exit codes pass through both launchers.
+- Skills: when the command is missing (a skill installed on its own with `npx skills add` has no `bin/`), offer `npm install -g github:keienhrri-bit/agent-cite-check` instead of a manual clone.
+
 ## 0.1.0 (2026-11-16)
 
 First release.

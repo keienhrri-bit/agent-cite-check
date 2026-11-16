@@ -69,6 +69,7 @@ You need Node.js 20 or newer. There is nothing to build.
 - **Run from a clone**: `node <clone>/bin/agent-cite-check.js ...`, or `npm install -g <clone>` to put it on PATH
 - **Claude Code plugin** (installs the skill below): `/plugin marketplace add keienhrri-bit/agent-cite-check`, then `/plugin install agent-cite-check@agent-cite-check`
 - **Codex skill**: copy [`codex/agent-cite-check/`](codex/agent-cite-check/) to `~/.codex/skills/agent-cite-check/`
+- **Skill only, with the [`skills`](https://github.com/vercel-labs/skills) CLI**: `npx skills add keienhrri-bit/agent-cite-check` copies the skill into your project for the agents you pick. It does not install the command; get that with the first line above.
 
 The package is not published to the npm registry; the first command installs it straight from this repository.
 

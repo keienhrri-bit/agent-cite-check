@@ -1,3 +1,4 @@
 * text=auto eol=lf
+*.cmd text eol=crlf
 # generated benchmark data is stored byte for byte (the Chinese logs mix CRLF and LF on purpose)
 bench/data/** -text

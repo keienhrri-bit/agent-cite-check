@@ -73,6 +73,7 @@ File changes 3: 1 match the report, 2 do not
 - **在克隆目录里直接跑**：`node <克隆目录>/bin/agent-cite-check.js ...`，或者 `npm install -g <克隆目录>` 装到 PATH
 - **Claude Code 插件**（会装上下面的 skill）：`/plugin marketplace add keienhrri-bit/agent-cite-check`，再 `/plugin install agent-cite-check@agent-cite-check`
 - **Codex skill**：把 [`codex/agent-cite-check/`](codex/agent-cite-check/) 复制到 `~/.codex/skills/agent-cite-check/`
+- **只装 skill，用 [`skills`](https://github.com/vercel-labs/skills) 命令行**：`npx skills add keienhrri-bit/agent-cite-check` 把 skill 复制进你的项目，装给你选的 Agent。它不装命令本身，命令用上面第一条装。
 
 没有发布到 npm 官方仓库；第一条命令直接从本仓库安装。
 

@@ -1,0 +1,3 @@
+#!/bin/sh
+# Launcher for shells that find this folder on PATH (the Claude Code plugin adds bin/ to PATH).
+exec node "$(dirname "$0")/agent-cite-check.js" "$@"

@@ -9,10 +9,10 @@ The agent you dispatched says "notes.md line 42 says X, 17 in total, I created o
 
 ## 1. Make the command available
 
-Once per machine: clone https://github.com/keienhrri-bit/agent-cite-check (Node 20 or newer, no dependencies), then either
+Once per machine (Node 20 or newer, no dependencies), either
 
-- `npm install -g <clone folder>` so that `agent-cite-check` is on PATH, or
-- call `node <clone folder>/bin/agent-cite-check.js` directly and note that path in `AGENTS.md`.
+- `npm install -g github:keienhrri-bit/agent-cite-check` so that `agent-cite-check` is on PATH (ask the user before installing), or
+- clone https://github.com/keienhrri-bit/agent-cite-check, call `node <clone folder>/bin/agent-cite-check.js` directly and note that path in `AGENTS.md`.
 
 Check with `agent-cite-check --version`. Below, `acc` is whichever form works.
 
