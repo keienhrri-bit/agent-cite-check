@@ -248,6 +248,11 @@ node bench/run.js        # 重跑测试集，写出 bench/RESULTS.md
 
 CI 在 Linux 和 Windows 上、用 Node 20、22、24 跑测试、测试集和两个示例。
 
+## 相关工具
+
+- [claude-code-usage-audit](https://github.com/keienhrri-bit/claude-code-usage-audit)：读本地日志，量出 Claude Code 和 Codex 的用量花在哪。
+- [claude-subagent-cost](https://github.com/keienhrri-bit/claude-subagent-cost)：Claude Code mod，显示每个子代理的用量，额度快满时提醒，并在用完前写好交接。
+
 ## 许可证
 
 MIT

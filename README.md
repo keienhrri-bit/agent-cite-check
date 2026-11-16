@@ -244,6 +244,11 @@ node bench/run.js        # rerun the benchmark, writes bench/RESULTS.md
 
 CI runs the tests, the benchmark and both examples on Linux and Windows with Node 20, 22 and 24.
 
+## Related
+
+- [claude-code-usage-audit](https://github.com/keienhrri-bit/claude-code-usage-audit): measures where Claude Code and Codex usage goes, from the local logs.
+- [claude-subagent-cost](https://github.com/keienhrri-bit/claude-subagent-cost): a Claude Code mod that shows each subagent's usage, warns when the quota is nearly used up, and writes a handoff before it runs out.
+
 ## License
 
 MIT
