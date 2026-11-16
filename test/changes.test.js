@@ -68,3 +68,22 @@ test('git mode', { skip: !hasGit }, () => {
   const res = runChecks('[~] a.md', new Workspace(root), { git: true });
   assert.deepEqual(byPath(res), { 'a.md': 'ok', 'c.md': 'unreported' });
 });
+
+// Windows: the root may be spelled with 8.3 short names (C:\Users\RUNNER~1\...) while git reports
+// the long top-level path. Changes must still be matched.
+test('git mode with a root spelled differently from git\'s top level (Windows short names)', { skip: !hasGit || process.platform !== 'win32' }, (t) => {
+  const base = makeWorkspace({});
+  const long = path.join(base, 'a long folder name');
+  fs.mkdirSync(path.join(long, 'sub'), { recursive: true });
+  fs.writeFileSync(path.join(long, 'sub', 'a.md'), 'a\n');
+  const git = (...args) => execFileSync('git', ['-C', long, ...args], { stdio: 'ignore' });
+  git('init', '-q');
+  git('-c', 'user.email=t@example.com', '-c', 'user.name=t', 'add', '.');
+  git('-c', 'user.email=t@example.com', '-c', 'user.name=t', 'commit', '-qm', 'init');
+  const short = execFileSync('cmd.exe', ['/d', '/s', '/c', `"for %I in ("${long}") do @echo %~sI"`], { windowsVerbatimArguments: true, encoding: 'utf8' }).trim();
+  if (short.toLowerCase() === long.toLowerCase()) return t.skip('no 8.3 short names on this volume');
+  fs.writeFileSync(path.join(long, 'sub', 'a.md'), 'a2\n');
+  fs.writeFileSync(path.join(long, 'sub', 'c.md'), 'c\n');
+  const res = runChecks('[~] a.md', new Workspace(path.join(short, 'sub')), { git: true });
+  assert.deepEqual(byPath(res), { 'a.md': 'ok', 'c.md': 'unreported' });
+});

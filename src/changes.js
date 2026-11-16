@@ -44,18 +44,21 @@ export function diffSnapshot(before, ws) {
 /** Changes reported by `git status` (relative to HEAD, untracked files included). */
 export function gitChanges(ws) {
   const run = (args) => execFileSync('git', ['-C', ws.root, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
-  const top = run(['rev-parse', '--show-toplevel']).trim();
+  // Porcelain paths are relative to the repository top. Strip the root's own prefix instead of
+  // comparing absolute paths: on Windows the root may be spelled differently from git's
+  // top-level path (8.3 short names such as C:\Users\RUNNER~1, drive-letter case, junctions).
+  const prefix = run(['rev-parse', '--show-prefix']).trim();
   const raw = run(['-c', 'core.quotepath=off', 'status', '--porcelain=v1', '-z', '--untracked-files=all', '--', '.']);
   const parts = raw.split('\0').filter(Boolean);
   const out = [];
   for (let i = 0; i < parts.length; i++) {
     const e = parts[i];
     const xy = e.slice(0, 2);
-    let p = e.slice(3);
+    const p = e.slice(3);
     if (xy[0] === 'R' || xy[0] === 'C') i++; // next entry is the original path
-    const abs = path.resolve(top, p);
-    const rel = ws.rel(abs);
-    if (rel === null || ws.ignored(rel)) continue;
+    if (!p.startsWith(prefix)) continue;
+    const rel = p.slice(prefix.length);
+    if (!rel || ws.ignored(rel)) continue;
     const change = xy === '??' || xy.includes('A') ? 'added' : xy.includes('D') ? 'deleted' : 'modified';
     out.push({ path: rel, change });
   }
