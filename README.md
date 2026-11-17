@@ -102,7 +102,7 @@ docs/notes.md#L42 — "verbatim excerpt"
 
 **Only files under `--root` are opened.** The report comes from an agent, so a path that leads out of the folder (`../.env`, an absolute path elsewhere on this machine, a UNC path such as `\\server\share\x`, or a link or junction inside the folder that points outside) fails as `missing_file` and is never read; UNC paths are refused before any file access. If a report legitimately cites several folders, use their common parent as `--root`.
 
-Files without an extension count when an excerpt follows: well-known names (`Dockerfile`, `Makefile`, `LICENSE`, `README` and similar), dotfiles (`.env:3 "…"`) and any path in backticks (`` `bin/tool`:3 "…" ``).
+Files without an extension count only in three forms, with the line number right after the colon and an excerpt following: a fixed list of well-known names (`Dockerfile`, `Containerfile`, `Makefile`, `Justfile`, `Jenkinsfile`, `Vagrantfile`, `Procfile`, `Gemfile`, `Rakefile`, `Brewfile`, `LICENSE`, `COPYING`, `NOTICE`, `AUTHORS`, `CODEOWNERS`, `README`, `CHANGELOG`, `VERSION`), dotfiles (`.env:3 "…"`), and backticked paths that contain a folder (`` `bin/tool`:3 "…" ``). Any other extensionless file is not recognized.
 
 **Limit.** A source that cites line 42 but quotes the exact text of line 44 passes as `shifted`. `--tolerance 0` closes this, at a cost: every line number that is off by even one line then fails as `wrong_line`. On the benchmark below, `node bench/run.js --tolerance 0` flags all 48 neighbor-line sources, and also all 72 benign sources whose line number is off by 1–3 (72 of the 504 benign sources).
 

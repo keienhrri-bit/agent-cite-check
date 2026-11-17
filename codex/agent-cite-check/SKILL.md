@@ -43,6 +43,7 @@ acc <report.md> --root <folder> --before <path>/before.json --writable "out/**"
 - Exit 0: everything checks out. Exit 1: at least one item failed. Exit 2: bad arguments or unreadable input. Use the exit code as the gate in scripts.
 - Read the summary, not the report. Each failing item is listed with its reason (`file does not exist`, `excerpt was changed; closest is line 42`, `claimed 13, recomputed 12`, `not in the report`, `changed a file outside the allowed area`).
 - Failing rows are not usable as they are. Drop them, or send the failure list back to the same agent once. Do not start a second model to review the first.
+- `path is outside --root; not opened`: only files under `--root` are read. If the agent was meant to read that folder, rerun with `--root` set to a common parent; otherwise drop the row.
 - A file listed as `unreported` or `forbidden` means the agent changed something it did not tell you about. Look at it before you use anything else from that run.
 
 ## 4. Limits

@@ -8,12 +8,15 @@ const LINE =
   String.raw`(?:[:：]\s*L?(?<a1>\d+)(?:\s*[-–—~～]\s*L?(?<b1>\d+))?(?![\d.]*\d)` +
   String.raw`|#L(?<a2>\d+)(?:-L?(?<b2>\d+))?` +
   String.raw`|\s*第\s*(?<a3>\d+)\s*(?:[-–—~～至到]\s*第?\s*(?<b3>\d+)\s*)?行)`;
-// Files without an extension: well-known names and dotfiles, or any `backticked` path. These count
-// as citations only when an excerpt follows, so prose such as "README: 3 sections" is left alone.
+// Files without an extension: the well-known names below, dotfiles, and `backticked` paths that
+// contain a folder separator. They count as citations only when the line number follows the colon
+// directly and an excerpt follows, so "README: 3 sections" or `status`: 200 "OK" are left alone.
 const BARE = 'Dockerfile|Containerfile|Makefile|GNUmakefile|Justfile|Jenkinsfile|Vagrantfile|Procfile|Gemfile|Rakefile|Brewfile|LICENSE|LICENCE|COPYING|NOTICE|AUTHORS|CODEOWNERS|README|CHANGELOG|VERSION';
-const NOEXT = String.raw`(?<!${PATHCH})(?:[A-Za-z]:[\\/])?(?:${PATHCH}*[\\/])?(?:${BARE}|\.[A-Za-z0-9_][\w-]*)`;
+const NAME = String.raw`(?:${BARE}|\.[A-Za-z0-9_][\w-]*)`;
+const NOEXT = String.raw`(?<!${PATHCH})(?:[A-Za-z]:[\\/])?(?:${PATHCH}*[\\/])?${NAME}`;
+const NBP = String.raw`[^${BT}\s]*[\\/][^${BT}\s]*|${NAME}`;
 const CITE_RE = new RegExp(
-  String.raw`(?:${BT}(?<bp>[^${BT}\n]+?${EXT})${BT}|(?<p>${PATH})|${BT}(?<nbp>[^${BT}\s]+)${BT}|(?<np>${NOEXT}))${LINE}`,
+  String.raw`(?:${BT}(?<bp>[^${BT}\n]+?${EXT})${BT}|(?<p>${PATH})|${BT}(?<nbp>${NBP})${BT}|(?<np>${NOEXT}))${LINE}`,
   'gu',
 );
 
@@ -87,7 +90,11 @@ export function parseText(text, { source = 'report', baseLine = 0 } = {}) {
     const a = Number(g.a1 ?? g.a2 ?? g.a3);
     const b = Number(g.b1 ?? g.b2 ?? g.b3 ?? a);
     const q = quoteAfter(text, m.index + m[0].length);
-    if ((g.nbp != null || g.np != null) && !q) continue; // extensionless names need an excerpt
+    if (g.nbp != null || g.np != null) {
+      // extensionless names need an excerpt, and "name:12" written tight, not "key: 12"
+      const lineSpec = m[0].slice(file.length + (g.nbp != null ? 2 : 0));
+      if (!q || /^[:：]\s/.test(lineSpec)) continue;
+    }
     citations.push({
       at: `${source}:${baseLine + lineOf(text, m.index)}`,
       raw: text.slice(m.index, q ? q.end : m.index + m[0].length).trim(),

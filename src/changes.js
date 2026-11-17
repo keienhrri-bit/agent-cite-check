@@ -45,7 +45,8 @@ export function takeSnapshot(ws) {
     }
   }
   if (problems.length) throw new ScanError(problems);
-  return { tool: 'agent-cite-check', kind: 'snapshot', created: new Date().toISOString(), files };
+  // `links: true` marks a snapshot that records links (0.1.1 and later); older ones did not
+  return { tool: 'agent-cite-check', kind: 'snapshot', created: new Date().toISOString(), links: true, files };
 }
 
 /** Is this parsed JSON a snapshot written by takeSnapshot (any version)? */
@@ -67,9 +68,12 @@ function differs(old, cur) {
 export function diffSnapshot(before, ws) {
   const now = takeSnapshot(ws).files;
   const prev = before.files ?? {};
+  // a snapshot from 0.1.0 has no links in it: links found now are not news, so leave them out
+  const linksKnown = before.links === true;
   const out = [];
   for (const [rel, cur] of Object.entries(now)) {
     const old = prev[rel];
+    if (cur.link != null && !linksKnown && !old) continue;
     if (!old) out.push({ path: rel, change: 'added' });
     else if (differs(old, cur)) out.push({ path: rel, change: 'modified' });
   }

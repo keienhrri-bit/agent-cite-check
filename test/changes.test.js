@@ -123,6 +123,17 @@ test('snapshots record symbolic links: new links and changed targets are changes
   assert.deepEqual(res.changes.items.map((i) => i.change).sort(), ['added', 'modified']);
 });
 
+test('a snapshot from 0.1.0 (no links recorded) does not report existing links as new', (t) => {
+  const root = makeWorkspace({ 'a.md': 'a\n', 'one.md': '1\n' });
+  if (!tryLink(path.join(root, 'one.md'), path.join(root, 'link'), 'file')) return t.skip('cannot create symbolic links here');
+  const now = takeSnapshot(new Workspace(root));
+  const files = Object.fromEntries(Object.entries(now.files).filter(([, f]) => f.link == null));
+  const old = { tool: 'agent-cite-check', kind: 'snapshot', created: 'x', files }; // as 0.1.0 wrote it
+  fs.writeFileSync(path.join(root, 'a.md'), 'a2\n');
+  const res = runChecks('[~] a.md', new Workspace(root), { before: old });
+  assert.deepEqual(byPath(res), { 'a.md': 'ok' });
+});
+
 test('a snapshot of a folder that cannot be fully scanned is an error, not a partial result', (t) => {
   const root = makeWorkspace({ 'a.md': 'a\n', 'b.md': 'b\n', 'locked/c.md': 'c\n' });
   // too many files

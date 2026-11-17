@@ -106,7 +106,7 @@ docs/notes.md#L42 — "verbatim excerpt"
 
 **只打开 `--root` 里的文件**：回报出自 Agent，所以指向目录外的路径一律按 `missing_file` 算不通过，文件不会被读取。这包括 `../.env`、本机其他位置的绝对路径、`\\server\share\x` 这类 UNC 路径，以及目录里指向外面的符号链接或 junction。UNC 路径在访问文件系统之前就被拒绝。回报确实要引用几个目录时，把 `--root` 设成它们共同的上级目录。
 
-没有扩展名的文件，后面跟着摘录才算出处：常见文件名（`Dockerfile`、`Makefile`、`LICENSE`、`README` 等）、点开头的文件（`.env:3「…」`），以及放在反引号里的任何路径（`` `bin/tool`:3「…」``）。
+没有扩展名的文件只认三种写法，而且冒号后面要紧跟行号、再跟摘录：一份固定名单里的常见文件名（`Dockerfile`、`Containerfile`、`Makefile`、`Justfile`、`Jenkinsfile`、`Vagrantfile`、`Procfile`、`Gemfile`、`Rakefile`、`Brewfile`、`LICENSE`、`COPYING`、`NOTICE`、`AUTHORS`、`CODEOWNERS`、`README`、`CHANGELOG`、`VERSION`），点开头的文件（`.env:3「…」`），以及放在反引号里、带目录的路径（`` `bin/tool`:3「…」``）。其他没有扩展名的文件不识别。
 
 **限制**：出处写第 42 行、摘录却原样抄的是第 44 行，会以 `shifted` 通过。`--tolerance 0` 能堵上这个口子，代价是行号只要差一行就按 `wrong_line` 算不通过。在下面的测试集上跑 `node bench/run.js --tolerance 0`：抄相邻行的 48 条全部检出，但 504 条无害出处里行号差 1–3 行的那 72 条也全部被报错。
 

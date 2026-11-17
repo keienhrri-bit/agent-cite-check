@@ -10,14 +10,14 @@
 ### Fixes
 
 - Change check: a staged rename (`git mv`) is now a deletion of the old path plus an addition, so `--protect` and `--writable` see both. Before, only the new path was checked.
-- Change check: symbolic links and junctions are recorded by target (never followed), so creating or redirecting one is a change. Before, they were invisible.
+- Change check: symbolic links and junctions are recorded by target (never followed), so creating or redirecting one is a change. Before, they were invisible. Checked against a snapshot taken with 0.1.0, links already in the folder are not reported as new.
 - Change check: a folder that cannot be read completely (unreadable subfolder, file that cannot be hashed, more than 200,000 files) stops `snapshot` and the check with exit code 2 instead of yielding a partial list.
 - `--before` must be a snapshot file. `null`, `{}` or another tool's JSON used to switch the change check off or compare against an empty baseline; now exit code 2. Snapshots from 0.1.0 are still accepted.
 - `--ignore` of a single file (`docs/x`) no longer drops the whole folder.
 - Unknown options are errors (exit code 2): a misspelled `--writable` used to be ignored silently. `-o` in a check, extra arguments, and bad `--format`, `--lang` or `--sample` values are errors too.
 - Sources: a cited range must be in order and end inside the file (`notes.md:1-999` on a one-line file is `out_of_range`); JSON character ranges must satisfy `0 <= start < end <= length` instead of being clamped.
 - Sources: an excerpt that occurs more than 1,000 times is matched at the occurrence nearest the cited line; before, only the first 1,000 were considered.
-- Sources: files without an extension (`Dockerfile`, `Makefile`, `LICENSE`, `.env`, any path in backticks) are checked when an excerpt follows; before, such sources were skipped.
+- Sources: files without an extension are checked in three forms, when the line number follows the colon directly and an excerpt follows: a fixed list of well-known names (`Dockerfile`, `Makefile`, `LICENSE` and others), dotfiles (`.env`) and backticked paths with a folder (`` `bin/tool` ``). Before, such sources were skipped. Other extensionless files are still not recognized.
 - Sources: a straight quote inside an excerpt followed by spaces no longer ends the excerpt early.
 - Numbers: whole numbers are compared exactly (a claimed `1000000001` for an actual `1000000000` used to pass); decimals must round to the actual value at the precision written.
 - Numbers: `1e3` is read whole instead of as `1`.

@@ -28,7 +28,7 @@ Paths are resolved against `--root`, in this order: the path as written (absolut
 
 Only files inside the root are read. A path that leads out of it (`..`, an absolute path elsewhere, a UNC or device path such as `\\server\share\x` or `\\?\C:\x`, a link or junction pointing outside) and has no match in the index fails as `missing_file` with `"reason": "outside_root"`; UNC paths are refused before any file access.
 
-Files without an extension (`Dockerfile`, `Makefile`, `LICENSE`, `README`, `.env` and similar, or any path in backticks) are recognized only when an excerpt follows.
+Files without an extension are recognized in three forms only, and only when the line number follows the colon directly and an excerpt follows: a fixed list of well-known names (`Dockerfile`, `Containerfile`, `Makefile`, `GNUmakefile`, `Justfile`, `Jenkinsfile`, `Vagrantfile`, `Procfile`, `Gemfile`, `Rakefile`, `Brewfile`, `LICENSE`, `LICENCE`, `COPYING`, `NOTICE`, `AUTHORS`, `CODEOWNERS`, `README`, `CHANGELOG`, `VERSION`), dotfiles (`.env`), and backticked paths that contain a folder separator (`` `bin/tool`:3 "…" ``). `` `status`: 200 "OK" `` is not a source.
 
 ### How an excerpt is compared
 

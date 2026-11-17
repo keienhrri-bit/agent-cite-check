@@ -52,6 +52,7 @@ What to do with failures:
 | Status | Meaning | Action |
 |---|---|---|
 | `missing_file` | the cited file is not in the folder | drop the row |
+| `missing_file`, "outside --root" | the path leads out of `--root`; the file was not opened | if the agent was meant to read that folder, rerun with `--root` set to a common parent; otherwise drop the row |
 | `out_of_range` | line number past the end of the file | drop the row, or use the line the summary names |
 | `wrong_line` | excerpt is real but more than 3 lines from the cited line | use the line the summary names, if the row still makes sense there |
 | `altered` | no exact match; a similar line exists | treat as not supported; the agent paraphrased or changed a detail |

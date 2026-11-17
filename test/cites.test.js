@@ -172,6 +172,13 @@ test('files without an extension are checked when an excerpt follows', () => {
   assert.equal(res.verdict, 'fail');
   // prose without an excerpt is not a citation
   assert.equal(parseReport('README: 3 sections. VERSION: 2. `count`: 3 items. LICENSE:1').citations.length, 0);
+  // nor are key: value pairs that happen to be followed by a quote
+  for (const s of ['`status`: 200 "OK"', '`port`:8080 "default"', '`退出码`：1「命令失败」', 'README: 3 "sections"', '`api/v1`: 200 "OK"']) {
+    assert.equal(parseReport(s).citations.length, 0, s);
+  }
+  for (const s of ['`Dockerfile`:2 "RUN make all"', '`.env`:1 "PORT=8080"', '`src/bin/tool`:2 "echo hello"', 'config/.npmrc:1 "registry=x"']) {
+    assert.equal(parseReport(s).citations.length, 1, s);
+  }
 });
 
 test('a straight quote inside the excerpt followed by spaces does not end it', () => {
