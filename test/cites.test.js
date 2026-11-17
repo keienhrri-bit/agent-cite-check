@@ -127,3 +127,57 @@ test('empty report fails unless allowed', () => {
   assert.equal(check({ 'notes.md': NOTES }, 'nothing to see').verdict, 'fail');
   assert.equal(check({ 'notes.md': NOTES }, 'nothing to see', { allowEmpty: true }).verdict, 'pass');
 });
+
+// --- fixes from the 0.1.1 code review ---
+
+test('a cited range must lie inside the file and be in order', () => {
+  const files = { 'one.md': 'alpha beta gamma delta\n' };
+  assert.deepEqual(statuses(check(files, '- one.md:1-999 "alpha beta"')), ['out_of_range']);
+  assert.deepEqual(statuses(check(files, '- one.md:1 "alpha beta"')), ['ok']);
+  const json = (c) => JSON.stringify({ citations: [{ file: 'one.md', ...c }] });
+  // character ranges: negative or past-the-end offsets are not silently clamped
+  assert.deepEqual(statuses(check(files, json({ start: -12, end: 100, quote: 'gamma delta' }))), ['out_of_range']);
+  assert.deepEqual(statuses(check(files, json({ start: 6, end: 2, quote: 'gamma delta' }))), ['out_of_range']);
+  assert.deepEqual(statuses(check(files, json({ start: 11, end: 22, quote: 'gamma delta' }))), ['ok']);
+  // no excerpt: start line past the end, or end before start
+  const res = check(files, json({ line: 999, end_line: 1 }), { allowNoQuote: true });
+  assert.deepEqual(statuses(res), ['out_of_range']);
+  assert.equal(res.verdict, 'fail');
+  assert.deepEqual(statuses(check({ 'empty.txt': '' }, json({ file: 'empty.txt', line: 1 }).replace('one.md', 'empty.txt'), { allowNoQuote: true })), ['out_of_range']);
+});
+
+test('a repeated excerpt is matched at the nearest place, however many times it occurs', () => {
+  const files = { 'log.md': 'Routine inspection completed.\n'.repeat(2000) };
+  const res = check(files, '- log.md:2000 "Routine inspection completed."\n- log.md:1500 "Routine inspection completed."');
+  assert.deepEqual(statuses(res), ['ok', 'ok']);
+  assert.equal(check(files, '- log.md:3000 "Routine inspection completed."').citations.items[0].detail.occurrences, 2000);
+});
+
+test('files without an extension are checked when an excerpt follows', () => {
+  const files = {
+    'notes.md': 'The pump was serviced on 12 May.\n',
+    Dockerfile: 'FROM base\nRUN make all\n',
+    '.env': 'PORT=8080\n',
+    'bin/tool': '#!/bin/sh\necho hello world\n',
+  };
+  const res = check(files, [
+    '- notes.md:1 "The pump was serviced on 12 May."',
+    '- Dockerfile:2 "RUN make everything"',
+    '- .env:1 "PORT=8080"',
+    '- `bin/tool`:2 "echo hello world"',
+  ].join('\n'));
+  assert.deepEqual(res.citations.items.map((i) => [i.file, i.status]), [
+    ['notes.md', 'ok'], ['Dockerfile', 'not_found'], ['.env', 'ok'], ['bin/tool', 'ok'],
+  ]);
+  assert.equal(res.verdict, 'fail');
+  // prose without an excerpt is not a citation
+  assert.equal(parseReport('README: 3 sections. VERSION: 2. `count`: 3 items. LICENSE:1').citations.length, 0);
+});
+
+test('a straight quote inside the excerpt followed by spaces does not end it', () => {
+  const files = { 'n.md': 'The label is "alpha"   and count is 10.\n' };
+  assert.deepEqual(statuses(check(files, '- n.md:1 "The label is "alpha"   and count is 99."')), ['altered']);
+  assert.deepEqual(statuses(check(files, '- n.md:1 "The label is "alpha"   and count is 10."')), ['ok']);
+  assert.deepEqual(statuses(check(files, '| 1 | n.md:1 "The label is "alpha"   and count is 10." |')), ['ok']);
+  assert.deepEqual(statuses(check(files, '| 1 | n.md:1 "The label is "alpha"   and count is 99." |')), ['altered']);
+});

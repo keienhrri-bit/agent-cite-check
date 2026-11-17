@@ -5,7 +5,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { makeWorkspace } from './helpers.js';
 import { Workspace } from '../src/workspace.js';
-import { takeSnapshot } from '../src/changes.js';
+import { takeSnapshot, ScanError } from '../src/changes.js';
 import { runChecks } from '../src/check.js';
 
 const byPath = (res) => Object.fromEntries(res.changes.items.map((i) => [i.path, i.status]));
@@ -86,4 +86,73 @@ test('git mode with a root spelled differently from git\'s top level (Windows sh
   fs.writeFileSync(path.join(long, 'sub', 'c.md'), 'c\n');
   const res = runChecks('[~] a.md', new Workspace(path.join(short, 'sub')), { git: true });
   assert.deepEqual(byPath(res), { 'a.md': 'ok', 'c.md': 'unreported' });
+});
+
+// --- fixes from the 0.1.1 code review ---
+
+test('git mode: a staged rename is a deletion of the old path plus an addition', { skip: !hasGit }, () => {
+  const root = makeWorkspace({ 'docs/important.md': 'keep me\n', 'readme.md': 'r\n' });
+  const git = (...args) => execFileSync('git', ['-C', root, '-c', 'user.email=t@example.com', '-c', 'user.name=t', ...args], { stdio: 'ignore' });
+  git('init', '-q');
+  git('add', '.');
+  git('commit', '-qm', 'init');
+  fs.mkdirSync(path.join(root, 'out'));
+  git('mv', 'docs/important.md', 'out/important.md');
+  const res = runChecks('[+] out/important.md', new Workspace(root), { git: true, writable: ['out/**'], protect: ['docs/**'] });
+  assert.deepEqual(byPath(res), { 'out/important.md': 'ok', 'docs/important.md': 'forbidden' });
+  assert.equal(res.verdict, 'fail');
+});
+
+function tryLink(target, link, type) {
+  try { fs.symlinkSync(target, link, type); return true; } catch (e) {
+    if (e.code === 'EPERM' || e.code === 'EACCES') return false;
+    throw e;
+  }
+}
+
+test('snapshots record symbolic links: new links and changed targets are changes', (t) => {
+  const root = makeWorkspace({ 'docs/a.md': 'a\n', 'one.md': '1\n', 'two.md': '2\n' });
+  if (!tryLink(path.join(root, 'one.md'), path.join(root, 'docs', 'old-link'), 'file')) return t.skip('cannot create symbolic links here');
+  const before = takeSnapshot(new Workspace(root));
+  assert.equal(typeof before.files['docs/old-link'].link, 'string');
+  fs.unlinkSync(path.join(root, 'docs', 'old-link'));
+  tryLink(path.join(root, 'two.md'), path.join(root, 'docs', 'old-link'), 'file'); // same name, new target
+  tryLink(path.join(root, 'one.md'), path.join(root, 'docs', 'new-link'), 'file');
+  const res = runChecks('', new Workspace(root), { before, protect: ['docs/**'], allowEmpty: true });
+  assert.deepEqual(byPath(res), { 'docs/old-link': 'forbidden', 'docs/new-link': 'forbidden' });
+  assert.deepEqual(res.changes.items.map((i) => i.change).sort(), ['added', 'modified']);
+});
+
+test('a snapshot of a folder that cannot be fully scanned is an error, not a partial result', (t) => {
+  const root = makeWorkspace({ 'a.md': 'a\n', 'b.md': 'b\n', 'locked/c.md': 'c\n' });
+  // too many files
+  assert.throws(() => takeSnapshot(new Workspace(root, { maxFiles: 2 })), (e) => e instanceof ScanError && /more than 2 files/.test(e.message));
+  // a folder that cannot be read
+  const readdir = fs.readdirSync;
+  t.mock.method(fs, 'readdirSync', function (dir, ...rest) {
+    if (String(dir).endsWith('locked')) throw Object.assign(new Error('denied'), { code: 'EACCES' });
+    return readdir.call(this, dir, ...rest);
+  });
+  assert.throws(() => takeSnapshot(new Workspace(root)), (e) => e instanceof ScanError && /locked \(EACCES\)/.test(e.message));
+  // checking citations only does not need a complete scan
+  const res = runChecks('- a.md:1 "a a a a a"', new Workspace(root), { minQuote: 1 });
+  assert.equal(res.citations.items.length, 1);
+  t.mock.restoreAll();
+  // a file that cannot be read while hashing
+  const read = fs.readFileSync;
+  t.mock.method(fs, 'readFileSync', function (p, ...rest) {
+    if (String(p).endsWith('b.md')) throw Object.assign(new Error('busy'), { code: 'EBUSY' });
+    return read.call(this, p, ...rest);
+  });
+  assert.throws(() => takeSnapshot(new Workspace(root)), (e) => e instanceof ScanError && /b\.md \(EBUSY\)/.test(e.message));
+});
+
+test('--ignore of one file does not drop the rest of its folder', () => {
+  const root = makeWorkspace({ 'docs/x': 'x\n', 'docs/important.md': 'i\n', 'dist/a.js': 'a\n' });
+  const ws = new Workspace(root, { ignore: ['docs/x', 'dist/**'] });
+  assert.deepEqual(ws.index(), ['docs/important.md']);
+  const before = takeSnapshot(ws);
+  fs.writeFileSync(path.join(root, 'docs/important.md'), 'edited\n');
+  const res = runChecks('', new Workspace(root, { ignore: ['docs/x', 'dist/**'] }), { before, allowEmpty: true });
+  assert.deepEqual(byPath(res), { 'docs/important.md': 'unreported' });
 });

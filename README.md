@@ -100,6 +100,10 @@ docs/notes.md#L42 — "verbatim excerpt"
 
 **Result per source.** `ok` and `shifted` pass. `wrong_line` (the excerpt is elsewhere in the file), `out_of_range`, `altered` (no exact match, but a similar line exists; the summary shows it), `not_found`, `missing_file`, `no_quote` and `too_short` fail. Paths are resolved generously: `notes.md` finds `docs/notes.md`, and an absolute path from another machine finds the same file under `--root`.
 
+**Only files under `--root` are opened.** The report comes from an agent, so a path that leads out of the folder (`../.env`, an absolute path elsewhere on this machine, a UNC path such as `\\server\share\x`, or a link or junction inside the folder that points outside) fails as `missing_file` and is never read; UNC paths are refused before any file access. If a report legitimately cites several folders, use their common parent as `--root`.
+
+Files without an extension count when an excerpt follows: well-known names (`Dockerfile`, `Makefile`, `LICENSE`, `README` and similar), dotfiles (`.env:3 "…"`) and any path in backticks (`` `bin/tool`:3 "…" ``).
+
 **Limit.** A source that cites line 42 but quotes the exact text of line 44 passes as `shifted`. `--tolerance 0` closes this, at a cost: every line number that is off by even one line then fails as `wrong_line`. On the benchmark below, `node bench/run.js --tolerance 0` flags all 48 neighbor-line sources, and also all 72 benign sources whose line number is off by 1–3 (72 of the 504 benign sources).
 
 ### Numbers
@@ -115,7 +119,7 @@ docs/notes.md#L42 — "verbatim excerpt"
 `files(docs/**/*.md) = 12`
 ```
 
-Also `lines`, `min`, `max` and `distinct`. CSV conditions use `= != > < >= <= ~` (contains) joined by `and`. The value is compared at the precision the agent wrote: `81.5` is checked to one decimal.
+Also `lines`, `min`, `max` and `distinct`. CSV conditions use `= != > < >= <= ~` (contains) joined by `and`. The value is compared at the precision the agent wrote: whole numbers must match exactly, `81.5` is checked to one decimal. A `/regex/` from the report runs with a 5-second limit; a pattern that does not finish in time fails that item instead of hanging the check.
 
 **Limit.** It checks the expression as written, not whether it is the right question. Free-text numbers ("about seventeen") are not picked up.
 
@@ -125,9 +129,11 @@ Also `lines`, `min`, `max` and `distinct`. CSV conditions use `= != > < >= <= ~`
 
 **Results.** `unreported` (changed but not listed), `phantom` (listed but unchanged or nonexistent) and `forbidden` (outside `--writable` or inside `--protect`) fail. The report, the snapshot and the `--json` file are left out.
 
+Symbolic links and junctions are recorded by their target and never followed, so a new or redirected link is a change. A staged rename (`git mv`) counts as a deletion of the old path plus an addition. If part of the folder cannot be read, or it holds more than 200,000 files, `snapshot` and the check stop with exit code 2 rather than work from a partial list; skip such parts with `--ignore`.
+
 ### Output and gate
 
-- Exit code 0 when everything passes, 1 when anything fails, 2 for bad arguments or unreadable input. `--max-failures N` tolerates up to N failures.
+- Exit code 0 when everything passes, 1 when anything fails, 2 for bad arguments or unreadable input. An unknown option is an error too, so a misspelled `--writable` cannot silently drop a restriction, and so is a `--before` file that is not a snapshot. `--max-failures N` tolerates up to N failures.
 - The summary is in Chinese when the report contains Chinese, else English (`--lang zh|en` to force).
 - `--json result.json` writes every item with its status, the line where the excerpt was actually found, and the recomputed values. `--format json` prints it instead of the summary.
 - `--sample 20` or `--sample 25%` checks a random sample of the sources in a long report (`--seed N` makes it repeatable).

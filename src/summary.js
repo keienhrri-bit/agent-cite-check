@@ -1,4 +1,5 @@
 // Short human summary of a result, in Chinese or English.
+import { minOf, maxOf } from './workspace.js';
 
 const T = {
   zh: {
@@ -12,14 +13,14 @@ const T = {
     chBad: (n) => `，${n} 处有问题`,
     more: (n) => `  …另有 ${n} 条`,
     s: {
-      missing_file: () => '文件不存在',
+      missing_file: (d) => (d.reason === 'outside_root' ? '路径在 --root 之外，没有打开' : '文件不存在'),
       out_of_range: (d) => `行号越界（文件只有 ${d.lines} 行）${d.foundAt ? `，摘录其实在第 ${d.foundAt} 行` : ''}`,
       wrong_line: (d) => `摘录在第 ${d.foundAt} 行，离所引行 ${d.offset} 行`,
       altered: (d) => `摘录被改过：最接近的是第 ${d.closestLine} 行（相似度 ${d.similarity}）「${d.closest}」`,
       not_found: () => '摘录在文件里找不到',
       no_quote: () => '没带逐字摘录',
       too_short: (d) => `摘录太短（${d.length} 字，至少 ${d.min} 字）`,
-      unreadable: (d) => `文件读不了（${d.reason}）`,
+      unreadable: (d) => (d.reason === 'outside_root' ? '链接指向 --root 之外，没有打开' : `文件读不了（${d.reason}）`),
     },
     num: {
       mismatch: (n) => `声明 ${n.claimed}，重算 ${n.actual}`,
@@ -27,7 +28,7 @@ const T = {
     },
     ch: {
       unreported: () => '回报没提到',
-      phantom: (c) => (c.exists ? '回报说改了，实际没变' : '回报列了，文件不存在'),
+      phantom: (c) => (c.outside ? '回报列了 --root 之外的路径' : c.exists ? '回报说改了，实际没变' : '回报列了，文件不存在'),
       forbidden: () => '改了不该改的文件',
       kind_differs: (c) => `回报写的是 ${c.reported}，实际是 ${c.change}`,
     },
@@ -43,14 +44,14 @@ const T = {
     chBad: (n) => `, ${n} do not`,
     more: (n) => `  … ${n} more`,
     s: {
-      missing_file: () => 'file does not exist',
+      missing_file: (d) => (d.reason === 'outside_root' ? 'path is outside --root; not opened' : 'file does not exist'),
       out_of_range: (d) => `line out of range (file has ${d.lines} lines)${d.foundAt ? `; the excerpt is at line ${d.foundAt}` : ''}`,
       wrong_line: (d) => `excerpt is at line ${d.foundAt}, ${d.offset} lines from the cited line`,
       altered: (d) => `excerpt was changed; closest is line ${d.closestLine} (similarity ${d.similarity}) "${d.closest}"`,
       not_found: () => 'excerpt not found in the file',
       no_quote: () => 'no verbatim excerpt',
       too_short: (d) => `excerpt too short (${d.length} chars, need ${d.min})`,
-      unreadable: (d) => `cannot read file (${d.reason})`,
+      unreadable: (d) => (d.reason === 'outside_root' ? 'link points outside --root; not opened' : `cannot read file (${d.reason})`),
     },
     num: {
       mismatch: (n) => `claimed ${n.claimed}, recomputed ${n.actual}`,
@@ -58,7 +59,7 @@ const T = {
     },
     ch: {
       unreported: () => 'not in the report',
-      phantom: (c) => (c.exists ? 'reported as changed, but unchanged' : 'reported, but the file does not exist'),
+      phantom: (c) => (c.outside ? 'reported a path outside --root' : c.exists ? 'reported as changed, but unchanged' : 'reported, but the file does not exist'),
       forbidden: () => 'changed a file outside the allowed area',
       kind_differs: (c) => `reported as ${c.reported}, actually ${c.change}`,
     },
@@ -82,7 +83,8 @@ export function summarize(res, lang = 'en') {
   if (c.total) {
     const shifted = c.items.filter((i) => i.status === 'shifted');
     const offs = shifted.map((i) => i.detail.offset);
-    const range = offs.length ? (Math.min(...offs) === Math.max(...offs) ? `${offs[0]}` : `${Math.min(...offs)}–${Math.max(...offs)}`) : '';
+    const lo = minOf(offs), hi = maxOf(offs);
+    const range = offs.length ? (lo === hi ? `${lo}` : `${lo}–${hi}`) : '';
     let line = t.cites(c.total, c.passed, shifted.length).replace('$R', range).replace('$S', range === '1' ? '' : 's');
     if (c.checked < c.total) line = line.replace(/[:：]/, (m) => t.sampled(c.checked, c.total) + m);
     if (c.failed) line += t.bad(c.failed);

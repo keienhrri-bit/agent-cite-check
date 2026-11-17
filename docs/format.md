@@ -24,7 +24,11 @@ The excerpt follows the line reference, optionally after `-`, `—` or `:`, in o
 - Several sources in one cell: notes.md:6 "Two samples were lost when the cooler lid cracked."; notes.md:9 "Rain started before noon, so station 4 was skipped."
 ```
 
-Paths are resolved against `--root`, in this order: an absolute path; a path relative to the root; then the file index, accepting a longer path (an absolute path from another machine, extra folders in front) or a shorter one (`notes.md` for `docs/notes.md`). If several files match, all are checked and the best result is kept; the JSON result lists the candidates.
+Paths are resolved against `--root`, in this order: the path as written (absolute, or relative to the root) when it lies inside the root; then the file index, accepting a longer path (an absolute path from another machine, extra folders in front) or a shorter one (`notes.md` for `docs/notes.md`). If several files match, all are checked and the best result is kept; the JSON result lists the candidates.
+
+Only files inside the root are read. A path that leads out of it (`..`, an absolute path elsewhere, a UNC or device path such as `\\server\share\x` or `\\?\C:\x`, a link or junction pointing outside) and has no match in the index fails as `missing_file` with `"reason": "outside_root"`; UNC paths are refused before any file access.
+
+Files without an extension (`Dockerfile`, `Makefile`, `LICENSE`, `README`, `.env` and similar, or any path in backticks) are recognized only when an excerpt follows.
 
 ### How an excerpt is compared
 
@@ -103,7 +107,7 @@ A snapshot stores the size and SHA-256 of every file under the root (files over 
 }
 ```
 
-- `citations`: `file` (or `path`, `source`), `line` or `lines`, optional `end_line`, `quote` (or `excerpt`, `text`), optional `id`. With `start` and `end`, the excerpt must lie within that character range of the file.
+- `citations`: `file` (or `path`, `source`), `line` or `lines`, optional `end_line`, `quote` (or `excerpt`, `text`), optional `id`. With `start` and `end`, the excerpt must lie within that character range of the file; the range must be whole numbers with `0 <= start < end <=` the file's length, else `out_of_range`. Line ranges must be in order and end inside the file.
 - `numbers`: `expr` and `claim` (or `value`).
 - `files`: strings, or objects with `path` (or `file`) and an optional `change`: `+`, `~`, `-`, `added`, `modified`, `deleted`, `created`, `new`, `changed`, `removed`.
 - `findings`, `items`, `rows`: strings parsed like Markdown text.

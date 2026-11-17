@@ -72,3 +72,47 @@ test('snapshot command writes a file', () => {
   assert.equal(r.code, 0);
   assert.ok(JSON.parse(fs.readFileSync(out, 'utf8')).files['a.md'].sha256);
 });
+
+// --- fixes from the 0.1.1 code review ---
+
+test('--before must be a snapshot; null or another JSON does not switch the change check off', () => {
+  const root = makeWorkspace({ 'n.md': 'alpha beta gamma\n' });
+  const rep = path.join(root, 'r.md');
+  fs.writeFileSync(rep, 'n.md:1 "alpha beta gamma"\n');
+  const snap = (body) => {
+    const f = path.join(root, '..', `${path.basename(root)}-${Math.random().toString(36).slice(2)}.json`);
+    fs.writeFileSync(f, body);
+    return f;
+  };
+  for (const body of ['null', 'false', '0', '{}', '[]', '{"files":{}}', '{"tool":"agent-cite-check","kind":"snapshot","files":{"a":1}}']) {
+    const r = run([rep, '--root', root, '--before', snap(body)]);
+    assert.equal(r.code, 2, body);
+    assert.match(r.err, /not a snapshot/, body);
+  }
+  // a snapshot written by 0.1.0 (size and sha256 only) is still accepted
+  const old = snap(JSON.stringify({ tool: 'agent-cite-check', kind: 'snapshot', created: 'x', files: { 'n.md': { size: 17, sha256: null } } }));
+  assert.equal(run([rep, '--root', root, '--before', old]).code, 0);
+});
+
+test('unknown or misplaced options are usage errors, not ignored', () => {
+  const root = makeWorkspace({ 'n.md': 'alpha beta gamma\n' });
+  const rep = path.join(root, 'r.md');
+  fs.writeFileSync(rep, 'n.md:1 "alpha beta gamma"\n');
+  const cases = [
+    [[rep, '--root', root, '--writtable', 'out/**'], /unknown option --writtable/],
+    [[rep, '--root', root, '-x'], /unknown option -x/],
+    [[rep, '--root', root, '-o', 'before.json'], /only for "snapshot".*--before/],
+    [[rep, '--root', root, '--format', 'xml'], /--format/],
+    [[rep, '--root', root, '--lang', 'fr'], /--lang/],
+    [[rep, '--root', root, '--sample', 'some'], /--sample/],
+    [[rep, rep, '--root', root], /one report at a time/],
+    [[rep, '--root', root, '--git=yes'], /takes no value/],
+    [['snapshot', '--root', root, '--before', 'x.json'], /not an option of "snapshot"/],
+  ];
+  for (const [args, msg] of cases) {
+    const r = run(args);
+    assert.equal(r.code, 2, args.join(' '));
+    assert.match(r.err, msg, args.join(' '));
+  }
+  assert.equal(run([rep, '--root', root]).code, 0);
+});

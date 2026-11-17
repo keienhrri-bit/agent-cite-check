@@ -77,7 +77,7 @@ export function runChecks(reportText, ws, opts = {}, reportName = 'report') {
 
   // numbers
   const numItems = parsed.numbers.map((n, i) => {
-    const r = verifyNumber(n, ws);
+    const r = verifyNumber(n, ws, o);
     return { id: `n${i + 1}`, at: n.at, expr: n.expr, claimed: n.claimed, ...r, pass: r.status === 'ok' };
   });
 

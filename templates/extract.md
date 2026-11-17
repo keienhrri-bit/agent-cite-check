@@ -12,7 +12,7 @@ Use this when an agent has to pull items out of files: action items, decisions, 
    agent-cite-check snapshot --root <folder> -o before.json
    ```
 
-   Keep `before.json` outside that folder, or pass the same `-o` path to the check: the checker leaves it out of the change list.
+   Keep `before.json` outside that folder. If it is inside, pass that same path to the check with `--before`: the checker leaves it out of the change list.
 4. When the report comes back:
 
    ```

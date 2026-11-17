@@ -25,8 +25,9 @@ export function decode(buf) {
   return { text: UTF8_LOSSY.decode(body), encoding: 'utf-8-lossy' };
 }
 
-/** Split into lines (1 line per \n, \r\n or \r). A trailing newline does not add an empty line. */
+/** Split into lines (1 line per \n, \r\n or \r). A trailing newline does not add an empty line; an empty file has none. */
 export function splitLines(text) {
+  if (text === '') return [];
   const lines = text.split(/\r\n|\r|\n/);
   if (lines.length > 1 && lines[lines.length - 1] === '') lines.pop();
   return lines;

@@ -8,13 +8,20 @@ const LINE =
   String.raw`(?:[:：]\s*L?(?<a1>\d+)(?:\s*[-–—~～]\s*L?(?<b1>\d+))?(?![\d.]*\d)` +
   String.raw`|#L(?<a2>\d+)(?:-L?(?<b2>\d+))?` +
   String.raw`|\s*第\s*(?<a3>\d+)\s*(?:[-–—~～至到]\s*第?\s*(?<b3>\d+)\s*)?行)`;
-const CITE_RE = new RegExp(String.raw`(?:${BT}(?<bp>[^${BT}\n]+?${EXT})${BT}|(?<p>${PATH}))${LINE}`, 'gu');
+// Files without an extension: well-known names and dotfiles, or any `backticked` path. These count
+// as citations only when an excerpt follows, so prose such as "README: 3 sections" is left alone.
+const BARE = 'Dockerfile|Containerfile|Makefile|GNUmakefile|Justfile|Jenkinsfile|Vagrantfile|Procfile|Gemfile|Rakefile|Brewfile|LICENSE|LICENCE|COPYING|NOTICE|AUTHORS|CODEOWNERS|README|CHANGELOG|VERSION';
+const NOEXT = String.raw`(?<!${PATHCH})(?:[A-Za-z]:[\\/])?(?:${PATHCH}*[\\/])?(?:${BARE}|\.[A-Za-z0-9_][\w-]*)`;
+const CITE_RE = new RegExp(
+  String.raw`(?:${BT}(?<bp>[^${BT}\n]+?${EXT})${BT}|(?<p>${PATH})|${BT}(?<nbp>[^${BT}\s]+)${BT}|(?<np>${NOEXT}))${LINE}`,
+  'gu',
+);
 
 const QUOTE_PAIRS = { '「': '」', '『': '』', '“': '”', '"': '"', '«': '»' };
 
 const OPS = 'lines|count|lines_with|files|rows|sum|avg|min|max|distinct';
 const NUM_RE = new RegExp(
-  String.raw`${BT}?\b(?<op>${OPS})\((?<args>[^${BT}\n]*?)\)\s*={1,2}\s*(?<val>[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)?(?:\.\d+)?%?)(?![\d.])${BT}?`,
+  String.raw`${BT}?\b(?<op>${OPS})\((?<args>[^${BT}\n]*?)\)\s*={1,2}\s*(?<val>[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)?(?:\.\d+)?(?:(?<=\d)[eE][-+]?\d+)?%?)(?![\d.])${BT}?`,
   'g',
 );
 
@@ -40,9 +47,14 @@ function quoteAfter(text, pos) {
   if (!close) return null;
   let end = text.indexOf(close, i + 1);
   if (open === '"') {
-    // straight quotes may also appear inside the excerpt: close at the first " followed by a cell/list boundary
+    // straight quotes may also appear inside the excerpt: close at the first " followed by a cell/list
+    // boundary. Look at the rest of the line, not a few characters: '"alpha"   and' is not the end.
+    const restOfLine = (k) => {
+      const e = text.indexOf('\n', k);
+      return text.slice(k, e < 0 ? text.length : e);
+    };
     let j = end;
-    while (j >= 0 && !/^[ \t]*(?:$|[\r\n|,;，；)）\]]|\\\|)/.test(text.slice(j + 1, j + 4))) j = text.indexOf('"', j + 1);
+    while (j >= 0 && !/^[ \t]*(?:\r?$|[|,;，；)）\]]|\\\|)/.test(restOfLine(j + 1))) j = text.indexOf('"', j + 1);
     if (j >= 0) end = j;
   }
   const nl = text.indexOf('\n', i + 1);
@@ -69,12 +81,13 @@ export function parseText(text, { source = 'report', baseLine = 0 } = {}) {
 
   for (const m of text.matchAll(CITE_RE)) {
     const g = m.groups;
-    const file = g.bp ?? g.p;
+    const file = g.bp ?? g.p ?? g.nbp ?? g.np;
     const before = text.slice(Math.max(0, m.index - 3), m.index);
     if (/:\/\/?$|\/\/$/.test(before) || file.startsWith('//') || file.includes('://')) continue; // URL
     const a = Number(g.a1 ?? g.a2 ?? g.a3);
     const b = Number(g.b1 ?? g.b2 ?? g.b3 ?? a);
     const q = quoteAfter(text, m.index + m[0].length);
+    if ((g.nbp != null || g.np != null) && !q) continue; // extensionless names need an excerpt
     citations.push({
       at: `${source}:${baseLine + lineOf(text, m.index)}`,
       raw: text.slice(m.index, q ? q.end : m.index + m[0].length).trim(),

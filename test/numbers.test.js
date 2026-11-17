@@ -68,3 +68,66 @@ test('precision follows what the agent wrote', () => {
   assert.equal(sameNumber('79', 79.25, 'sum'), false);
   assert.equal(sameNumber('3,120', 3120, 'sum'), true);
 });
+
+// --- fixes from the 0.1.1 code review ---
+
+test('an empty file has 0 lines', () => {
+  const r = check({ 'empty.txt': '', 'one.txt': '\n' }, '`lines(empty.txt) = 0` `lines(empty.txt) = 1` `lines(one.txt) = 1`').numbers.items;
+  assert.deepEqual(r.map((x) => x.status), ['ok', 'mismatch', 'ok']);
+});
+
+test('whole numbers are compared exactly, decimals to the precision written', () => {
+  assert.equal(sameNumber('1000000001', 1000000000, 'sum'), false);
+  assert.equal(sameNumber('1000000000', 1000000000, 'sum'), true);
+  assert.equal(sameNumber('0.1234567891', 0.1234567892, 'avg'), false);
+  assert.equal(sameNumber('0.1234567892', 0.1234567892, 'avg'), true);
+  // float noise from summing decimals is not a mismatch
+  const tenth = Array.from({ length: 10 }, () => 0.1).reduce((s, x) => s + x, 0);
+  assert.notEqual(tenth, 1);
+  assert.equal(sameNumber('1', tenth, 'sum'), true);
+  const csv = 'v\n' + Array.from({ length: 10 }, () => '0.1').join('\n') + '\n';
+  assert.equal(check({ 't.csv': csv }, '`sum(t.csv, v) = 1`').numbers.items[0].status, 'ok');
+});
+
+test('numbers in scientific notation are read whole, not as a prefix', () => {
+  const r = check({ 'one.md': 'a\n' }, '`lines(one.md) = 1e3`').numbers.items[0];
+  assert.equal(r.claimed, '1e3');
+  assert.equal(r.status, 'mismatch');
+  assert.equal(sameNumber('1e3', 1000, 'sum'), true);
+  assert.equal(sameNumber('1.5e-3', 0.0015, 'avg'), true);
+  assert.equal(sameNumber('1.5e-3', 0.0016, 'avg'), false);
+});
+
+test('CSV: the delimiter is sniffed outside quotes', () => {
+  const r = check({ 't.csv': '"a;b;c",value\nx,10\n' }, '`sum(t.csv, value) = 10`').numbers.items[0];
+  assert.equal(r.status, 'ok');
+});
+
+test('CSV: "and" inside a quoted condition value is not a separator', () => {
+  const files = { 't.csv': 'name,v\nResearch and Development,1\nSales,2\n' };
+  const r = check(files, '`rows(t.csv, name="Research and Development") = 1` `rows(t.csv, v>0 and name=Sales) = 1`').numbers.items;
+  assert.deepEqual(r.map((x) => x.status), ['ok', 'ok']);
+});
+
+test('CSV: a record of empty fields is kept, a blank line is not', () => {
+  assert.deepEqual(parseCsv('a,b\n,\n\nx,y\n').rows, [['', ''], ['x', 'y']]);
+  const r = check({ 't.csv': 'a,b\n,\nx,y\n' }, '`rows(t.csv) = 1` `rows(t.csv) = 2`').numbers.items;
+  assert.deepEqual(r.map((x) => x.status), ['mismatch', 'ok']);
+});
+
+test('min() and max() over a long column', () => {
+  const n = 500000;
+  const csv = 'v\n' + Array.from({ length: n }, (_, i) => String(i + 1)).join('\n') + '\n';
+  const r = check({ 'big.csv': csv }, `\`min(big.csv, v) = 1\` \`max(big.csv, v) = ${n}\``).numbers.items;
+  assert.deepEqual(r.map((x) => x.status), ['ok', 'ok']);
+});
+
+test('a regex that backtracks forever fails the item instead of hanging the check', () => {
+  const files = { 'log.txt': 'a'.repeat(40) + '!\nTODO one\n' };
+  const report = '`count(log.txt, /(a+)+$/) = 0`\n`count(log.txt, /TODO/) = 1`\n`lines_with(log.txt, /(a+)+$/) = 0`';
+  const t0 = Date.now();
+  const r = check(files, report, { regexTimeout: 1000 }).numbers.items;
+  assert.deepEqual(r.map((x) => x.status), ['error', 'ok', 'error']);
+  assert.match(r[0].detail.reason, /did not finish within 1 s/);
+  assert.ok(Date.now() - t0 < 15000);
+});
