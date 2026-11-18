@@ -17,7 +17,7 @@ Your agent hands back a table that says "notes.md line 42 says X, 17 in total". 
 2. **Numbers**: does "17" come out again when the count is redone?
 3. **File changes**: did the agent touch files it did not report, or files it was not allowed to touch?
 
-It calls no model, needs no network and has no dependencies (Node 20 or newer). It prints a short summary and exits 0 or 1, so it works as an acceptance gate after any agent: Claude Code subagents, Codex, Gemini CLI, or a script of your own.
+It calls no model, needs no network and has no npm dependencies (Node 20 or newer). It prints a short summary and exits 0 or 1, so it works as an acceptance gate after any agent: Claude Code subagents, Codex, Gemini CLI, or a script of your own.
 
 It checks wording and arithmetic, not meaning. It will not tell you whether the agent missed items or whether an excerpt supports the conclusion drawn from it.
 
@@ -63,7 +63,7 @@ File changes 3: 1 match the report, 2 do not
 
 ## Install
 
-You need Node.js 20 or newer. There is nothing to build.
+You need Node.js 20 or newer. There is nothing to build. Open-file verification uses procfs on Linux, system Perl on macOS, and Windows PowerShell with the Windows handle API on Windows. If the handle cannot be verified, the read fails.
 
 - **From GitHub onto PATH**: `npm install -g github:keienhrri-bit/agent-cite-check`, then `agent-cite-check ...`
 - **Run from a clone**: `node <clone>/bin/agent-cite-check.js ...`, or `npm install -g <clone>` to put it on PATH
@@ -102,7 +102,7 @@ docs/notes.md#L42 — "verbatim excerpt"
 
 **Only files under `--root` are opened.** The report comes from an agent, so a path that leads out of the folder (`../.env`, an absolute path elsewhere on this machine, a UNC path such as `\\server\share\x`, or a link or junction inside the folder that points outside) fails as `missing_file` and is never read; UNC paths are refused before any file access. If a report legitimately cites several folders, use their common parent as `--root`.
 
-Files without an extension count only in three forms, with the line number right after the colon and an excerpt following: a fixed list of well-known names (`Dockerfile`, `Containerfile`, `Makefile`, `Justfile`, `Jenkinsfile`, `Vagrantfile`, `Procfile`, `Gemfile`, `Rakefile`, `Brewfile`, `LICENSE`, `COPYING`, `NOTICE`, `AUTHORS`, `CODEOWNERS`, `README`, `CHANGELOG`, `VERSION`), dotfiles (`.env:3 "…"`), and backticked paths that contain a folder (`` `bin/tool`:3 "…" ``). Any other extensionless file is not recognized.
+Extensionless citations require an excerpt. Use a dotfile or a recognized name (`Dockerfile`, `Containerfile`, `Makefile`, `GNUmakefile`, `Justfile`, `Jenkinsfile`, `Vagrantfile`, `Procfile`, `Gemfile`, `Rakefile`, `Brewfile`, `LICENSE`, `LICENCE`, `COPYING`, `NOTICE`, `AUTHORS`, `CODEOWNERS`, `README`, `CHANGELOG`, `VERSION`), or put any other name in backticks, including paths with spaces. Use a colon immediately followed by the line number, `#L`, or `第…行`. Examples include `GNUmakefile#L1 "alpha"`, `LICENCE第1行「alpha」`, and `` `my tool`:1 "alpha" ``.
 
 **Limit.** A source that cites line 42 but quotes the exact text of line 44 passes as `shifted`. `--tolerance 0` closes this, at a cost: every line number that is off by even one line then fails as `wrong_line`. On the benchmark below, `node bench/run.js --tolerance 0` flags all 48 neighbor-line sources, and also all 72 benign sources whose line number is off by 1–3 (72 of the 504 benign sources).
 

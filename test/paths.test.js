@@ -141,3 +141,113 @@ test('UNC paths are refused without any file system call', (t) => {
   assert.deepEqual(touched.filter((p) => /^[\\/]{2}/.test(p)), []);
   assert.ok(!touched.some((p) => /server/.test(p)), touched.join('\n'));
 });
+
+test('canonical containment preserves directory case', (t) => {
+  const { root } = setup();
+  const native = fs.realpathSync.native;
+  const canonical = native(root);
+  t.mock.method(fs.realpathSync, 'native', (p) => p === root ? canonical : path.join(path.dirname(canonical), 'WS', 'notes.md'));
+  assert.equal(new Workspace(root).locate(path.join(root, 'notes.md')), 'outside');
+});
+
+test('a location decision is refreshed before use', (t) => {
+  const { root, base } = setup();
+  const ws = new Workspace(root);
+  const file = path.join(root, 'notes.md');
+  assert.equal(ws.locate(file), 'inside');
+  const native = fs.realpathSync.native;
+  t.mock.method(fs.realpathSync, 'native', (p) => p === file ? path.join(base, 'outside', 'notes.md') : native(p));
+  assert.equal(ws.locate(file), 'outside');
+});
+
+test('text and snapshot reads use a verified descriptor', (t) => {
+  const { root } = setup();
+  const read = fs.readFileSync;
+  t.mock.method(fs, 'readFileSync', (fd, ...args) => {
+    assert.equal(typeof fd, 'number');
+    return read(fd, ...args);
+  });
+  const ws = new Workspace(root);
+  assert.equal(ws.load(path.join(root, 'notes.md')).lines.length, 1);
+  assert.ok(takeSnapshot(ws).files['notes.md'].sha256);
+});
+
+test('an outside junction is rejected before target metadata queries', (t) => {
+  const { root, base } = setup();
+  const link = path.join(root, 'linked');
+  if (!tryLink(path.join(base, 'outside'), link, 'junction')) return t.skip('junction unavailable');
+  const before = takeSnapshot(new Workspace(root));
+  const candidate = path.join(link, 'secret.env');
+  const stat = t.mock.method(fs, 'statSync');
+  const exists = t.mock.method(fs, 'existsSync');
+  const res = run(root, 'linked/secret.env:1 "sample"\n[+] linked/secret.env', { before });
+  assert.equal(res.changes.items[0].outside, true);
+  for (const spy of [stat, exists]) assert.ok(!spy.mock.calls.some(c => c.arguments[0] === candidate));
+});
+
+test('UNC names cannot match local suffixes or empty globs', () => {
+  const { root } = setup();
+  const before = takeSnapshot(new Workspace(root));
+  fs.appendFileSync(path.join(root, 'notes.md'), 'changed');
+  const name = '//server/share/notes.md';
+  const res = run(root, JSON.stringify({
+    citations: [{ file: name, line: 1, quote: 'The pump' }],
+    numbers: [{ expr: 'files(//server/share/*.md)', claim: 0 }],
+    files: [name],
+  }), { before });
+  assert.equal(res.citations.items[0].detail?.reason, 'outside_root');
+  assert.equal(res.numbers.items[0].status, 'error');
+  assert.ok(res.changes.items.some(i => i.status === 'phantom' && i.outside));
+});
+
+test('a replacement descriptor is rejected before reading text or hashing', (t) => {
+  const { root } = setup();
+  const placeholder = path.join(root, 'notes.md');
+  const other = path.join(root, 'sub', 'x.md');
+  const open = fs.openSync;
+  t.mock.method(fs, 'openSync', (p, ...args) => open(p === placeholder ? other : p, ...args));
+  assert.ok(new Workspace(root).load(placeholder).error);
+  assert.throws(() => takeSnapshot(new Workspace(root)), /notes\.md/);
+});
+
+test('outside status fields match the changelog for all three item types', () => {
+  const { root } = setup();
+  const name = '//server/share/notes.md';
+  const res = run(root, JSON.stringify({
+    citations: [{ file: name, line: 1, quote: 'alpha' }],
+    numbers: [{ expr: 'lines(' + name + ')', claim: 0 }], files: [name],
+  }), { before: takeSnapshot(new Workspace(root)) });
+  const cite = res.citations.items[0], num = res.numbers.items[0], file = res.changes.items[0];
+  assert.deepEqual([cite.status, cite.detail.reason, num.status, file.status, file.outside, file.exists],
+    ['missing_file', 'outside_root', 'error', 'phantom', true, false]);
+  assert.match(num.detail.reason, /outside the root folder/);
+  const log = fs.readFileSync(new URL('../CHANGELOG.md', import.meta.url), 'utf8');
+  for (const field of ['outside_root', 'outside: true', 'exists: false']) assert.ok(log.includes(field), field);
+});
+
+test('moving the containing directory after open invalidates the handle location', (t) => {
+  const { root, base } = setup();
+  const dir = path.join(root, 'sub');
+  const stat = fs.fstatSync;
+  const ws = new Workspace(root);
+  t.mock.method(fs, 'fstatSync', (fd, opts) => {
+    try { fs.renameSync(dir, path.join(base, 'moved')); }
+    catch (e) {
+      if (process.platform !== 'win32' || !['EPERM', 'EACCES', 'EBUSY'].includes(e.code)) throw e;
+      t.skip('filesystem locks the containing directory while its child is open');
+    }
+    return stat(fd, opts);
+  });
+  const result = ws.load(path.join(dir, 'x.md'));
+  if (!fs.existsSync(dir)) assert.equal(result.error, 'outside_root');
+});
+
+test('distinct sibling directories on a case-sensitive volume', (t) => {
+  const { root, base } = setup();
+  const sibling = path.join(base, 'WS');
+  if (fs.existsSync(sibling)) return t.skip('volume folds case');
+  fs.mkdirSync(sibling);
+  if (!tryLink(sibling, path.join(root, 'alias'), 'junction')) return t.skip('link unavailable');
+  fs.writeFileSync(path.join(sibling, 'example.md'), 'fixture');
+  assert.equal(new Workspace(root).locate(path.join(root, 'alias', 'example.md')), 'outside');
+});

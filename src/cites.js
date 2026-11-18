@@ -56,7 +56,7 @@ function checkOne(c, doc, opts) {
     return { status: 'no_quote' };
   }
   const q = normalize(c.quote);
-  if (q.length < minQuote) return { status: 'too_short', detail: { length: q.length, min: minQuote } };
+  if (!q.length || q.length < minQuote) return { status: 'too_short', detail: { length: q.length, min: minQuote } };
 
   // character-range citations (JSON form): exact span check, offsets must lie inside the text
   if (c.start != null && c.end != null) {

@@ -1,4 +1,6 @@
 import { test } from 'node:test';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { check } from './helpers.js';
 import { parseCsv, splitArgs, sameNumber } from '../src/numbers.js';
@@ -123,11 +125,56 @@ test('min() and max() over a long column', () => {
 });
 
 test('a regex that backtracks forever fails the item instead of hanging the check', () => {
-  const files = { 'log.txt': 'a'.repeat(40) + '!\nTODO one\n' };
-  const report = '`count(log.txt, /(a+)+$/) = 0`\n`count(log.txt, /TODO/) = 1`\n`lines_with(log.txt, /(a+)+$/) = 0`';
-  const t0 = Date.now();
-  const r = check(files, report, { regexTimeout: 1000 }).numbers.items;
-  assert.deepEqual(r.map((x) => x.status), ['error', 'ok', 'error']);
-  assert.match(r[0].detail.reason, /did not finish within 1 s/);
-  assert.ok(Date.now() - t0 < 15000);
+  const code = `
+    import { check } from './test/helpers.js';
+    const r = check({ 'log.txt': 'a'.repeat(40) + '!\\nTODO one\\n' },
+      'count(log.txt, /(a+)+$/) = 0\\ncount(log.txt, /TODO/) = 1\\nlines_with(log.txt, /(a+)+$/) = 0',
+      { regexTimeout: 1000 });
+    console.log(JSON.stringify(r.numbers.items));
+  `;
+  const items = childItems(code);
+  assert.deepEqual(items.map(x => x.status), ['error', 'ok', 'error']);
+  assert.match(items[0].detail.reason, /did not finish within 1 s/);
+});
+
+test('integer precision and decimal ties use a single rounding result', () => {
+  assert.equal(sameNumber('1000000000000', 1000000000000.5, 'sum'), false);
+  for (const sign of [1, -1]) {
+    for (const [x, y] of [[1.24999999, 1.2], [1.25, 1.3], [1.25000001, 1.3]]) {
+      for (const claim of [1.2, 1.3]) assert.equal(sameNumber(String(sign * claim), sign * x, 'avg'), claim === y);
+    }
+  }
+});
+
+test('nonrepresentable exponents and incomplete claims cannot pass', () => {
+  assert.equal(sameNumber('1e999', 1, 'sum'), false);
+  assert.equal(sameNumber('1e-999', 0, 'sum'), false);
+  const items = nums('lines(notes/a.md) = 1e+');
+  assert.ok(!items.some(x => x.status === 'ok'));
+});
+
+function childItems(code) {
+  const child = spawnSync(process.execPath, ['--input-type=module', '-e', code], {
+    cwd: fileURLToPath(new URL('../', import.meta.url)), encoding: 'utf8', timeout: 15000, killSignal: 'SIGKILL',
+  });
+  assert.ifError(child.error);
+  assert.equal(child.status, 0, child.stderr);
+  return JSON.parse(child.stdout);
+}
+
+test('empty and whitespace excerpts finish with minQuote zero', () => {
+  const items = childItems(`
+    import { check } from './test/helpers.js';
+    const r = check({ 'n.md': 'alpha' }, 'n.md:1 ""\\nn.md:1 "  "', { minQuote: 0 });
+    console.log(JSON.stringify(r.citations.items));
+  `);
+  assert.deepEqual(items.map(x => x.status), ['too_short', 'too_short']);
+});
+
+test('decimal midpoint rounds away from zero exactly once', () => {
+  assert.equal(sameNumber('1.2', 1.25, 'avg'), false);
+  assert.equal(sameNumber('-1.2', -1.25, 'avg'), false);
+});
+test('a truncated exponent is not a successful numeric claim', () => {
+  assert.ok(!nums('lines(notes/a.md) = 1e+').some(i => i.pass));
 });

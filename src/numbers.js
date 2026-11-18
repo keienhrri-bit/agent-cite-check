@@ -2,7 +2,7 @@
 import path from 'node:path';
 import vm from 'node:vm';
 import { fold, isGlob } from './text.js';
-import { minOf, maxOf } from './workspace.js';
+import { minOf, maxOf, isUnc } from './workspace.js';
 
 /** A /regex/ from a report runs under this time limit (ms); a pattern that backtracks forever fails the item. */
 export const REGEX_TIMEOUT_MS = 5000;
@@ -214,7 +214,9 @@ function countLiteral(hay, needle) {
 
 /** Resolve the first argument to a list of files (a glob may match many). */
 function targetFiles(ws, arg) {
+  if (isUnc(arg.replace(/^["“「]/, ''))) throw new CheckError('outside the root folder: ' + arg);
   const p = unquote(arg) ?? arg.replace(/^`|`$/g, '');
+  if (isUnc(p)) throw new CheckError(`outside the root folder: ${p}`);
   if (isGlob(p)) {
     const files = ws.glob(p);
     return { files, glob: true };
@@ -309,14 +311,24 @@ export function evaluate(n, ws, opts = {}) {
  */
 export function sameNumber(claimedStr, actual, op) {
   const claimed = toNumber(claimedStr);
-  if (Number.isNaN(claimed) || !Number.isFinite(actual)) return false;
+  if (!Number.isFinite(claimed) || !Number.isFinite(actual)) return false;
+  const mantissa = String(claimedStr).split(/e/i, 1)[0];
+  if (claimed === 0 && /[1-9]/.test(mantissa)) return false;
   const dec = decimalsOf(claimedStr);
-  if (dec > 0 || op === 'avg') {
-    const unit = 10 ** -dec;
-    return Math.abs(actual - claimed) <= unit / 2 + unit * 1e-6;
+  if (!dec && op !== 'avg') {
+    if (Number.isInteger(actual)) return actual === claimed;
+    // Preserve the allowance for addition noise, bounded below one integer step.
+    return Math.abs(actual - claimed) <= Math.min(1e-9, Number.EPSILON * Math.abs(claimed));
   }
-  if (Number.isSafeInteger(actual) && Number.isSafeInteger(claimed)) return actual === claimed;
-  return Math.abs(actual - claimed) <= Math.max(1e-9, Math.abs(claimed) * 1e-12);
+  const [mant, exponent = '0'] = Math.abs(actual).toString().split('e');
+  const places = (mant.split('.')[1]?.length ?? 0) - Number(exponent);
+  if (dec >= places) return actual === claimed;
+  // Round decimal digits directly: multiplying binary floats by a power of ten
+  // can move a value to the other side of a decimal midpoint.
+  const coefficient = BigInt(mant.replace('.', ''));
+  const divisor = 10n ** BigInt(places - dec);
+  const rounded = (coefficient + divisor / 2n) / divisor;
+  return Math.sign(actual) * Number(rounded + 'e-' + dec) === claimed;
 }
 
 export function verifyNumber(n, ws, opts = {}) {

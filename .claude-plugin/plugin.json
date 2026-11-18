@@ -1,7 +1,7 @@
 {
   "name": "agent-cite-check",
   "displayName": "Agent Cite Check",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Check a subagent's or another agent's report against your local files: every quoted line, every declared number, every changed file. No model calls.",
   "author": {
     "name": "keienhrri-bit",

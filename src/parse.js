@@ -8,13 +8,11 @@ const LINE =
   String.raw`(?:[:：]\s*L?(?<a1>\d+)(?:\s*[-–—~～]\s*L?(?<b1>\d+))?(?![\d.]*\d)` +
   String.raw`|#L(?<a2>\d+)(?:-L?(?<b2>\d+))?` +
   String.raw`|\s*第\s*(?<a3>\d+)\s*(?:[-–—~～至到]\s*第?\s*(?<b3>\d+)\s*)?行)`;
-// Files without an extension: the well-known names below, dotfiles, and `backticked` paths that
-// contain a folder separator. They count as citations only when the line number follows the colon
-// directly and an excerpt follows, so "README: 3 sections" or `status`: 200 "OK" are left alone.
+// Extensionless names require an excerpt and a tight line specifier.
 const BARE = 'Dockerfile|Containerfile|Makefile|GNUmakefile|Justfile|Jenkinsfile|Vagrantfile|Procfile|Gemfile|Rakefile|Brewfile|LICENSE|LICENCE|COPYING|NOTICE|AUTHORS|CODEOWNERS|README|CHANGELOG|VERSION';
 const NAME = String.raw`(?:${BARE}|\.[A-Za-z0-9_][\w-]*)`;
 const NOEXT = String.raw`(?<!${PATHCH})(?:[A-Za-z]:[\\/])?(?:${PATHCH}*[\\/])?${NAME}`;
-const NBP = String.raw`[^${BT}\s]*[\\/][^${BT}\s]*|${NAME}`;
+const NBP = String.raw`[^${BT}\r\n]+`;
 const CITE_RE = new RegExp(
   String.raw`(?:${BT}(?<bp>[^${BT}\n]+?${EXT})${BT}|(?<p>${PATH})|${BT}(?<nbp>${NBP})${BT}|(?<np>${NOEXT}))${LINE}`,
   'gu',
@@ -24,7 +22,7 @@ const QUOTE_PAIRS = { '「': '」', '『': '』', '“': '”', '"': '"', '«': 
 
 const OPS = 'lines|count|lines_with|files|rows|sum|avg|min|max|distinct';
 const NUM_RE = new RegExp(
-  String.raw`${BT}?\b(?<op>${OPS})\((?<args>[^${BT}\n]*?)\)\s*={1,2}\s*(?<val>[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)?(?:\.\d+)?(?:(?<=\d)[eE][-+]?\d+)?%?)(?![\d.])${BT}?`,
+  String.raw`${BT}?\b(?<op>${OPS})\((?<args>[^${BT}\n]*?)\)\s*={1,2}\s*(?<val>[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)?(?:\.\d+)?(?:(?<=\d)[eE][-+]?\d*)?%?)(?![\deE.])${BT}?`,
   'g',
 );
 
@@ -48,25 +46,34 @@ function quoteAfter(text, pos) {
   const open = text[i];
   const close = QUOTE_PAIRS[open];
   if (!close) return null;
-  let end = text.indexOf(close, i + 1);
+  const fragment = text.slice(i + 1, i + 2001).split('\n', 1)[0];
+  let offset = fragment.indexOf(close);
+  if (offset < 0) return null;
   if (open === '"') {
-    // straight quotes may also appear inside the excerpt: close at the first " followed by a cell/list
-    // boundary. Look at the rest of the line, not a few characters: '"alpha"   and' is not the end.
-    const restOfLine = (k) => {
-      const e = text.indexOf('\n', k);
-      return text.slice(k, e < 0 ? text.length : e);
-    };
-    let j = end;
-    while (j >= 0 && !/^[ \t]*(?:\r?$|[|,;，；)）\]]|\\\|)/.test(restOfLine(j + 1))) j = text.indexOf('"', j + 1);
-    if (j >= 0) end = j;
+    const limit = i + 1 + fragment.length;
+    const completeLine = limit === text.length || text[limit] === '\n';
+    const first = offset;
+    offset = -1;
+    for (let j = first; j >= 0; j = fragment.indexOf(close, j + 1)) {
+      let k = i + j + 2;
+      while (k < limit && (text[k] === ' ' || text[k] === '\t')) k++;
+      if (k === text.length || /[\n|,;，；)）\]]/.test(text[k]) || text.startsWith('\\|', k)) {
+        offset = j;
+        break;
+      }
+    }
+    if (offset === -1) {
+      if (!completeLine) return null;
+      offset = first; // Inline prose can follow a closed excerpt on the same line.
+    }
   }
-  const nl = text.indexOf('\n', i + 1);
-  if (end < 0 || (nl >= 0 && nl < end) || end - i > 2000) return null;
+  const end = i + 1 + offset;
   return { quote: text.slice(i + 1, end).replace(/\\\|/g, '|'), end: end + 1 };
 }
 
 /** Parse citations, number claims and file claims out of free text. */
 export function parseText(text, { source = 'report', baseLine = 0 } = {}) {
+  text = text.replace(/\r\n?/g, '\n');
   const citations = [];
   const numbers = [];
   const files = [];
@@ -86,7 +93,7 @@ export function parseText(text, { source = 'report', baseLine = 0 } = {}) {
     const g = m.groups;
     const file = g.bp ?? g.p ?? g.nbp ?? g.np;
     const before = text.slice(Math.max(0, m.index - 3), m.index);
-    if (/:\/\/?$|\/\/$/.test(before) || file.startsWith('//') || file.includes('://')) continue; // URL
+    if ((file.startsWith('//') && text[m.index - 1] === ':') || /:\/\/?$|\/\/$/.test(before) || file.includes('://')) continue; // URL
     const a = Number(g.a1 ?? g.a2 ?? g.a3);
     const b = Number(g.b1 ?? g.b2 ?? g.b3 ?? a);
     const q = quoteAfter(text, m.index + m[0].length);
@@ -100,7 +107,7 @@ export function parseText(text, { source = 'report', baseLine = 0 } = {}) {
       raw: text.slice(m.index, q ? q.end : m.index + m[0].length).trim(),
       file,
       line: a,
-      endLine: Math.max(a, b),
+      endLine: b,
       quote: q ? q.quote : null,
     });
   }

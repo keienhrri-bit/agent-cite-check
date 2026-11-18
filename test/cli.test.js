@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { main } from '../src/cli.js';
@@ -27,14 +28,19 @@ test('quickstart example fails with the planted problems', () => {
 // launchers: the .cmd on Windows (else Windows Script Host opens the .js), the sh script elsewhere.
 test('PATH launchers run the CLI and pass the exit code through', () => {
   const bin = path.join(here, '..', 'bin');
-  const args = [path.join(quick, 'report.md'), '--root', path.join(quick, 'workspace')];
-  const launch = (extra) => (process.platform === 'win32'
-    ? spawnSync('cmd.exe', ['/d', '/c', path.join(bin, 'agent-cite-check.cmd'), ...extra], { encoding: 'utf8' })
-    : spawnSync('sh', [path.join(bin, 'agent-cite-check'), ...extra], { encoding: 'utf8' }));
+  const env = { ...process.env };
+  const pathKey = Object.keys(env).find(k => k.toLowerCase() === 'path') ?? 'PATH';
+  env[pathKey] = bin + path.delimiter + env[pathKey];
+  const launch = (args) => {
+    const opts = { env, cwd: quick, encoding: 'utf8' };
+    return process.platform === 'win32'
+      ? spawnSync('cmd.exe', ['/d', '/c', 'agent-cite-check', ...args], opts)
+      : spawnSync('agent-cite-check', args, opts);
+  };
   const v = launch(['--version']);
   assert.equal(v.status, 0);
   assert.equal(v.stdout.trim(), JSON.parse(fs.readFileSync(path.join(here, '..', 'package.json'), 'utf8')).version);
-  const r = launch(args);
+  const r = launch(['report.md', '--root', 'workspace']);
   assert.equal(r.status, 1);
   assert.match(r.stdout, /FAIL \(4 problems\)/);
 });
@@ -70,7 +76,10 @@ test('snapshot command writes a file', () => {
   const out = path.join(root, '..', path.basename(root) + '-snap.json');
   const r = run(['snapshot', '--root', root, '-o', out]);
   assert.equal(r.code, 0);
-  assert.ok(JSON.parse(fs.readFileSync(out, 'utf8')).files['a.md'].sha256);
+  const expected = JSON.parse(fs.readFileSync(out, 'utf8')).files;
+  const long = out + '.long';
+  assert.equal(run(['snapshot', '--root', root, '--out', long]).code, 0);
+  assert.deepEqual(JSON.parse(fs.readFileSync(long, 'utf8')).files, expected);
 });
 
 // --- fixes from the 0.1.1 code review ---
@@ -90,7 +99,7 @@ test('--before must be a snapshot; null or another JSON does not switch the chan
     assert.match(r.err, /not a snapshot/, body);
   }
   // a snapshot written by 0.1.0 (size and sha256 only) is still accepted
-  const old = snap(JSON.stringify({ tool: 'agent-cite-check', kind: 'snapshot', created: 'x', files: { 'n.md': { size: 17, sha256: null } } }));
+  const old = snap(JSON.stringify({ tool: 'agent-cite-check', kind: 'snapshot', created: 'x', files: { 'n.md': { size: 17, sha256: createHash('sha256').update('alpha beta gamma\n').digest('hex') } } }));
   assert.equal(run([rep, '--root', root, '--before', old]).code, 0);
 });
 
@@ -105,6 +114,9 @@ test('unknown or misplaced options are usage errors, not ignored', () => {
     [[rep, '--root', root, '--format', 'xml'], /--format/],
     [[rep, '--root', root, '--lang', 'fr'], /--lang/],
     [[rep, '--root', root, '--sample', 'some'], /--sample/],
+    [[rep, '--root', root, '--sample', '2.5'], /--sample/],
+    [[rep, '--root', root, '--sample', '100.1%'], /--sample/],
+    [[rep, '--root', root, '--protect', '--git'], /needs a value/],
     [[rep, rep, '--root', root], /one report at a time/],
     [[rep, '--root', root, '--git=yes'], /takes no value/],
     [['snapshot', '--root', root, '--before', 'x.json'], /not an option of "snapshot"/],

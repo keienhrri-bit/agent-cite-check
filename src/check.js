@@ -6,7 +6,7 @@ import { verifyCitation, CITE_PASS } from './cites.js';
 import { verifyNumber } from './numbers.js';
 import { diffSnapshot, gitChanges, reconcile, CHANGE_PASS } from './changes.js';
 
-export const VERSION = '0.1.0';
+export const VERSION = '0.1.1';
 
 export const DEFAULTS = {
   tolerance: 3,

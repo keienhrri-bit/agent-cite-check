@@ -4,26 +4,11 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { globToRegExp, toPosix } from './text.js';
-import { MAX_BYTES } from './workspace.js';
+import { MAX_BYTES, isUnc, ScanError } from './workspace.js';
 
 const NOCASE = process.platform === 'win32' || process.platform === 'darwin';
 
-/** The folder could not be scanned completely, so a change check would miss part of it. */
-export class ScanError extends Error {
-  constructor(problems) {
-    const list = problems.slice(0, 5).map((p) => `${p.path} (${p.reason})`).join(', ');
-    super(`cannot scan the whole folder: ${list}${problems.length > 5 ? ` and ${problems.length - 5} more` : ''}; skip these with --ignore GLOB or pick a smaller --root`);
-    this.problems = problems;
-  }
-}
-
-function hashFile(abs) {
-  const st = fs.statSync(abs);
-  if (st.size > MAX_BYTES * 8) return { size: st.size, sha256: null };
-  const h = crypto.createHash('sha256');
-  h.update(fs.readFileSync(abs));
-  return { size: st.size, sha256: h.digest('hex') };
-}
+export { ScanError } from './workspace.js';
 
 /**
  * Snapshot every file under the workspace root: { rel: { size, sha256 } }, and { rel: { link } }
@@ -34,13 +19,35 @@ export function takeSnapshot(ws) {
   const files = {};
   const idx = ws.index();
   const problems = [...ws.scanProblems];
-  for (const rel of idx) {
-    try { files[rel] = hashFile(path.join(ws.root, rel)); } catch (e) {
-      if (e.code !== 'ENOENT') problems.push({ path: rel, reason: e.code ?? 'error' }); // ENOENT: vanished while walking
+  // Bound descriptor usage and amortize the Windows handle query across each batch.
+  for (let i = 0; i < idx.length; i += 32) {
+    const opened = [];
+    try {
+      for (const rel of idx.slice(i, i + 32)) {
+        try { opened.push({ rel, ...ws.openFile(path.join(ws.root, rel)) }); }
+        catch (e) { if (e.code !== 'ENOENT') problems.push({ path: rel, reason: e.code ?? 'error' }); }
+      }
+      if (!opened.length) continue;
+      ws.verifyOpen(opened);
+      for (const { rel, fd, size } of opened) {
+        try {
+          const sha256 = size > MAX_BYTES * 8 ? null : crypto.createHash('sha256').update(fs.readFileSync(fd)).digest('hex');
+          files[rel] = { size, sha256 };
+        } catch (e) { problems.push({ path: rel, reason: e.code ?? 'error' }); }
+      }
+    } catch (e) {
+      problems.push({ path: opened[0].rel, reason: e.code ?? 'cannot verify open files' });
+    } finally {
+      for (const { fd } of opened) fs.closeSync(fd);
     }
   }
   for (const rel of ws.links()) {
-    try { files[rel] = { link: fs.readlinkSync(path.join(ws.root, rel)) }; } catch (e) {
+    try {
+      const abs = path.join(ws.root, rel);
+      const parent = path.dirname(abs);
+      if (parent !== ws.root && ws.locate(parent) !== 'inside') throw Object.assign(new Error('parent changed'), { code: 'ESTALE' });
+      files[rel] = { link: fs.readlinkSync(abs) };
+    } catch (e) {
       if (e.code !== 'ENOENT') problems.push({ path: rel, reason: e.code ?? 'error' });
     }
   }
@@ -55,7 +62,7 @@ export function isSnapshot(s) {
   if (s.tool !== 'agent-cite-check' || s.kind !== 'snapshot') return false;
   if (!s.files || typeof s.files !== 'object' || Array.isArray(s.files)) return false;
   return Object.values(s.files).every((f) => f && typeof f === 'object' &&
-    (typeof f.link === 'string' || (Number.isFinite(f.size) && (f.sha256 === null || typeof f.sha256 === 'string'))));
+    (typeof f.link === 'string' || (Number.isSafeInteger(f.size) && f.size >= 0 && (f.sha256 === null ? f.size > MAX_BYTES * 8 : typeof f.sha256 === 'string' && /^[a-f0-9]{64}$/.test(f.sha256)))));
 }
 
 function differs(old, cur) {
@@ -68,12 +75,12 @@ function differs(old, cur) {
 export function diffSnapshot(before, ws) {
   const now = takeSnapshot(ws).files;
   const prev = before.files ?? {};
-  // a snapshot from 0.1.0 has no links in it: links found now are not news, so leave them out
-  const linksKnown = before.links === true;
+  if (before.links !== true && ws.links().length) {
+    throw new ScanError([{ path: '.', reason: 'old snapshot has no link baseline; take a new snapshot' }]);
+  }
   const out = [];
   for (const [rel, cur] of Object.entries(now)) {
     const old = prev[rel];
-    if (cur.link != null && !linksKnown && !old) continue;
     if (!old) out.push({ path: rel, change: 'added' });
     else if (differs(old, cur)) out.push({ path: rel, change: 'modified' });
   }
@@ -106,7 +113,7 @@ export function gitChanges(ws) {
     if (/[RC]/.test(xy)) {
       // "R  new\0old": a rename deletes the old path and adds the new one; a copy only adds
       const orig = parts[++i];
-      add(p, 'added');
+      if (xy[1] !== 'D') add(p, 'added');
       if (xy.includes('R') && orig) add(orig, 'deleted');
       continue;
     }
@@ -131,6 +138,10 @@ export function reconcile(actual, reported, ws, opts = {}) {
   const rep = new Map();
   for (const r of reported) {
     const p = toPosix(String(r.path).trim()).replace(/^\.\//, '');
+    if (isUnc(p)) {
+      rep.set(key(p), { ...r, rel: p, inRoot: false });
+      continue;
+    }
     const isAbs = path.isAbsolute(p) || /^[A-Za-z]:\//.test(p);
     const tries = isAbs ? [path.resolve(p)] : [path.resolve(ws.root, p), ...(opts.reportDir ? [path.resolve(opts.reportDir, p)] : [])];
     let rel = null;
@@ -170,8 +181,9 @@ export function reconcile(actual, reported, ws, opts = {}) {
   for (const [k, r] of rep) {
     if (seen.has(k) || exclude.has(k)) continue;
     // only paths inside the root are looked up; a listed path outside it is not opened at all
-    const exists = r.inRoot ? fs.existsSync(path.join(ws.root, r.rel)) : false;
-    items.push({ path: r.rel, change: null, reported: r.change ?? true, status: 'phantom', exists, ...(r.inRoot ? {} : { outside: true }), at: r.at });
+    const location = r.inRoot ? ws.locate(path.join(ws.root, r.rel)) : 'outside';
+    const exists = location === 'inside';
+    items.push({ path: r.rel, change: null, reported: r.change ?? true, status: 'phantom', exists, ...(location === 'outside' ? { outside: true } : {}), at: r.at });
   }
   return items;
 }

@@ -5,7 +5,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { makeWorkspace } from './helpers.js';
 import { Workspace } from '../src/workspace.js';
-import { takeSnapshot, ScanError } from '../src/changes.js';
+import { takeSnapshot, ScanError, isSnapshot } from '../src/changes.js';
 import { runChecks } from '../src/check.js';
 
 const byPath = (res) => Object.fromEntries(res.changes.items.map((i) => [i.path, i.status]));
@@ -101,6 +101,9 @@ test('git mode: a staged rename is a deletion of the old path plus an addition',
   const res = runChecks('[+] out/important.md', new Workspace(root), { git: true, writable: ['out/**'], protect: ['docs/**'] });
   assert.deepEqual(byPath(res), { 'out/important.md': 'ok', 'docs/important.md': 'forbidden' });
   assert.equal(res.verdict, 'fail');
+  fs.unlinkSync(path.join(root, 'out/important.md'));
+  const removed = runChecks('', new Workspace(root), { git: true, protect: ['docs/**'] });
+  assert.deepEqual(byPath(removed), { 'docs/important.md': 'forbidden' });
 });
 
 function tryLink(target, link, type) {
@@ -123,15 +126,16 @@ test('snapshots record symbolic links: new links and changed targets are changes
   assert.deepEqual(res.changes.items.map((i) => i.change).sort(), ['added', 'modified']);
 });
 
-test('a snapshot from 0.1.0 (no links recorded) does not report existing links as new', (t) => {
+test('a snapshot from 0.1.0 (no links recorded) requires a new baseline when links exist', (t) => {
   const root = makeWorkspace({ 'a.md': 'a\n', 'one.md': '1\n' });
   if (!tryLink(path.join(root, 'one.md'), path.join(root, 'link'), 'file')) return t.skip('cannot create symbolic links here');
   const now = takeSnapshot(new Workspace(root));
   const files = Object.fromEntries(Object.entries(now.files).filter(([, f]) => f.link == null));
   const old = { tool: 'agent-cite-check', kind: 'snapshot', created: 'x', files }; // as 0.1.0 wrote it
   fs.writeFileSync(path.join(root, 'a.md'), 'a2\n');
-  const res = runChecks('[~] a.md', new Workspace(root), { before: old });
-  assert.deepEqual(byPath(res), { 'a.md': 'ok' });
+  tryLink(path.join(root, 'one.md'), path.join(root, 'new-link'), 'file');
+  assert.throws(() => runChecks('[~] a.md', new Workspace(root), { before: old }), /snapshot.*link/i);
+
 });
 
 test('a snapshot of a folder that cannot be fully scanned is an error, not a partial result', (t) => {
@@ -146,12 +150,15 @@ test('a snapshot of a folder that cannot be fully scanned is an error, not a par
   });
   assert.throws(() => takeSnapshot(new Workspace(root)), (e) => e instanceof ScanError && /locked \(EACCES\)/.test(e.message));
   // checking citations only does not need a complete scan
-  const res = runChecks('- a.md:1 "a a a a a"', new Workspace(root), { minQuote: 1 });
-  assert.equal(res.citations.items.length, 1);
+  const res = runChecks('- a.md:1 "a"', new Workspace(root), { minQuote: 1 });
+  assert.equal(res.citations.items[0].status, 'ok');
+  for (const text of ['- x/a.md:1 "a"', 'files(*.md) = 2']) {
+    assert.throws(() => runChecks(text, new Workspace(root)), ScanError);
+  }
   t.mock.restoreAll();
   // a file that cannot be read while hashing
-  const read = fs.readFileSync;
-  t.mock.method(fs, 'readFileSync', function (p, ...rest) {
+  const read = fs.openSync;
+  t.mock.method(fs, 'openSync', function (p, ...rest) {
     if (String(p).endsWith('b.md')) throw Object.assign(new Error('busy'), { code: 'EBUSY' });
     return read.call(this, p, ...rest);
   });
@@ -166,4 +173,19 @@ test('--ignore of one file does not drop the rest of its folder', () => {
   fs.writeFileSync(path.join(root, 'docs/important.md'), 'edited\n');
   const res = runChecks('', new Workspace(root, { ignore: ['docs/x', 'dist/**'] }), { before, allowEmpty: true });
   assert.deepEqual(byPath(res), { 'docs/important.md': 'unreported' });
+});
+
+test('only valid snapshot sizes and digests are accepted', () => {
+  const snap = takeSnapshot(new Workspace(makeWorkspace({ 'n.md': 'a' })));
+  for (const record of [{ size: -1, sha256: 'a'.repeat(64) }, { size: 0.5, sha256: 'a'.repeat(64) },
+    { size: 1, sha256: '' }, { size: 1, sha256: null }]) {
+    assert.equal(isSnapshot({ ...snap, files: { 'n.md': record } }), false);
+  }
+});
+
+test('ignored entries and empty directories do not exceed the scan limit', () => {
+  const root = makeWorkspace({ a: 'a', z: 'ignored' });
+  fs.mkdirSync(path.join(root, 'zz'));
+  const ws = new Workspace(root, { maxFiles: 1, ignore: ['z'] });
+  assert.deepEqual(Object.keys(takeSnapshot(ws).files), ['a']);
 });

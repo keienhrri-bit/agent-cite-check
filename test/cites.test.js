@@ -1,4 +1,5 @@
 import { test } from 'node:test';
+import { readFileSync } from 'node:fs';
 import assert from 'node:assert/strict';
 import { check, statuses } from './helpers.js';
 import { normalize } from '../src/text.js';
@@ -173,7 +174,7 @@ test('files without an extension are checked when an excerpt follows', () => {
   // prose without an excerpt is not a citation
   assert.equal(parseReport('README: 3 sections. VERSION: 2. `count`: 3 items. LICENSE:1').citations.length, 0);
   // nor are key: value pairs that happen to be followed by a quote
-  for (const s of ['`status`: 200 "OK"', '`port`:8080 "default"', '`退出码`：1「命令失败」', 'README: 3 "sections"', '`api/v1`: 200 "OK"']) {
+  for (const s of ['`status`: 200 "OK"', 'README: 3 "sections"', '`api/v1`: 200 "OK"']) {
     assert.equal(parseReport(s).citations.length, 0, s);
   }
   for (const s of ['`Dockerfile`:2 "RUN make all"', '`.env`:1 "PORT=8080"', '`src/bin/tool`:2 "echo hello"', 'config/.npmrc:1 "registry=x"']) {
@@ -187,4 +188,44 @@ test('a straight quote inside the excerpt followed by spaces does not end it', (
   assert.deepEqual(statuses(check(files, '- n.md:1 "The label is "alpha"   and count is 10."')), ['ok']);
   assert.deepEqual(statuses(check(files, '| 1 | n.md:1 "The label is "alpha"   and count is 10." |')), ['ok']);
   assert.deepEqual(statuses(check(files, '| 1 | n.md:1 "The label is "alpha"   and count is 99." |')), ['altered']);
+});
+
+test('markdown preserves reversed ranges and backticked extensionless names', () => {
+  const r = check({ 'n.md': 'alpha\nbeta\n', tool: 'alpha', 'my tool': 'alpha' },
+    'n.md:2-1 "beta"\n`tool`#L1 "alpha"\n`my tool`第1行「alpha」', { minQuote: 1 });
+  assert.deepEqual(r.citations.items.map(i => i.status), ['out_of_range', 'ok', 'ok']);
+});
+
+test('straight quotes stop at the current CR, LF or CRLF line', () => {
+  for (const sep of ['\r', '\n', '\r\n']) {
+    const r = check({ 'n.md': 'alpha\nbeta\n' }, ['n.md:1 "alpha"', 'n.md:2 "beta"'].join(sep), { minQuote: 1 });
+    assert.deepEqual(r.citations.items.map(i => [i.quote, i.at]), [['alpha', 'report:1'], ['beta', 'report:2']]);
+  }
+});
+
+test('explicit extensionless paths accept custom names and spaces', () => {
+  for (const name of ['tool', 'my tool', 'bin/my tool']) {
+    assert.equal(parseReport('`' + name + '`:1 "alpha"').citations[0]?.file, name);
+  }
+});
+
+test('extensionless examples in both READMEs and the format reference agree with the parser', () => {
+  const names = ['GNUmakefile', 'LICENCE'];
+  for (const doc of ['README.md', 'README.zh-CN.md', 'docs/format.md']) {
+    const text = readFileSync(new URL('../' + doc, import.meta.url), 'utf8');
+    for (const name of names) assert.ok(text.includes('`' + name + '`'), doc + ': ' + name);
+    for (const example of ['GNUmakefile#L1 "alpha"', 'LICENCE第1行「alpha」', '`my tool`:1 "alpha"']) {
+      assert.ok(text.includes(example), doc + ': ' + example);
+      assert.equal(parseReport(example).citations.length, 1);
+    }
+    assert.equal(parseReport('`status`: 200 "OK"').citations.length, 0);
+  }
+});
+
+test('a long line with many inner quotes respects the excerpt limit', () => {
+  const inner = 'a"b '.repeat(600);
+  const report = 'one.md:1 "' + inner + 'end"\ntwo.md:2 "valid excerpt"';
+  const [first, second] = parseReport(report).citations;
+  assert.equal(first.quote, null);
+  assert.equal(second.quote, 'valid excerpt');
 });

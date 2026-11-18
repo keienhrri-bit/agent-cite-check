@@ -41,7 +41,7 @@ Exit codes: 0 pass, 1 checks failed, 2 usage or read error.`;
 
 const REPEAT = new Set(['ignore', 'writable', 'protect']);
 const FLAGS = new Set(['allow-no-quote', 'allow-empty', 'git', 'help', 'version']);
-const VALUED = new Set(['root', 'ignore', 'tolerance', 'min-quote', 'sample', 'seed', 'before', 'writable', 'protect', 'json', 'format', 'lang', 'max-failures']);
+const VALUED = new Set(['out', 'root', 'ignore', 'tolerance', 'min-quote', 'sample', 'seed', 'before', 'writable', 'protect', 'json', 'format', 'lang', 'max-failures']);
 // options that only make sense for `snapshot`, and those that only make sense for a check
 const SNAPSHOT_ONLY = new Set(['out']);
 const CHECK_ONLY = new Set(['tolerance', 'min-quote', 'allow-no-quote', 'sample', 'seed', 'before', 'git', 'writable', 'protect', 'json', 'format', 'lang', 'max-failures', 'allow-empty']);
@@ -53,7 +53,7 @@ function parseArgs(argv) {
     if (a === '-h') { opts.help = true; continue; }
     if (a === '-o') {
       opts.out = argv[++i];
-      if (opts.out === undefined) throw new UsageError('-o needs a value');
+      if (!opts.out || /^-(?:-|[a-z])/i.test(opts.out)) throw new UsageError('-o needs a value');
       continue;
     }
     if (a.startsWith('--')) {
@@ -67,7 +67,7 @@ function parseArgs(argv) {
       if (!VALUED.has(k)) throw new UsageError(`unknown option --${k} (see --help)`);
       if (v === undefined) {
         v = argv[++i];
-        if (v === undefined) throw new UsageError(`--${k} needs a value`);
+        if (!v || /^-(?:-|[a-z])/i.test(v)) throw new UsageError(`--${k} needs a value`);
       }
       if (REPEAT.has(k)) (opts[k] ??= []).push(v);
       else opts[k] = v;
@@ -91,7 +91,7 @@ function checkArgs(o) {
   if (o._.length > 1) throw new UsageError(`one report at a time; unexpected argument: ${o._[1]}`);
   if (o.format !== undefined && !['text', 'json'].includes(o.format)) throw new UsageError('--format must be text or json');
   if (o.lang !== undefined && !['zh', 'en'].includes(o.lang)) throw new UsageError('--lang must be zh or en');
-  if (o.sample !== undefined && !/^\d+(?:\.\d+)?%?$/.test(String(o.sample).trim())) throw new UsageError('--sample must be a count (20) or a share (25%)');
+  if (o.sample !== undefined && !(/^\d+$/.test(o.sample) && Number.isSafeInteger(Number(o.sample)) || /^\d+(?:\.\d+)?%$/.test(o.sample) && parseFloat(o.sample) <= 100)) throw new UsageError('--sample must be a count (20) or a share (25%)');
   if (o.before !== undefined && o.git) throw new UsageError('use either --before or --git, not both');
 }
 
