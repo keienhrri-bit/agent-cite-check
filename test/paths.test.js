@@ -204,8 +204,10 @@ test('a replacement descriptor is rejected before reading text or hashing', (t) 
   const { root } = setup();
   const placeholder = path.join(root, 'notes.md');
   const other = path.join(root, 'sub', 'x.md');
+  // openFile opens the canonical path, which can be spelled differently (macOS /var is /private/var, Windows 8.3 names)
+  const swapped = new Set([placeholder, fs.realpathSync.native(placeholder)]);
   const open = fs.openSync;
-  t.mock.method(fs, 'openSync', (p, ...args) => open(p === placeholder ? other : p, ...args));
+  t.mock.method(fs, 'openSync', (p, ...args) => open(swapped.has(p) ? other : p, ...args));
   assert.ok(new Workspace(root).load(placeholder).error);
   assert.throws(() => takeSnapshot(new Workspace(root)), /notes\.md/);
 });
