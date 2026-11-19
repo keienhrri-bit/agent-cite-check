@@ -10,6 +10,7 @@ import { makeWorkspace } from './helpers.js';
 import { Workspace } from '../src/workspace.js';
 import { runChecks } from '../src/check.js';
 import { takeSnapshot, ScanError } from '../src/changes.js';
+import { summarize } from '../src/summary.js';
 
 const SECRET = 'DATABASE_PASSWORD=fake-secret-value-123';
 const GUESS = 'DATABASE_PASSWORD=unknown';
@@ -448,7 +449,12 @@ test('a path that cannot be looked up fails its own item, not the whole check', 
   assert.deepEqual(res.citations.items.map((i) => [i.status, i.detail?.reason]), [['unreadable', 'unreadable'], ['ok', undefined]]);
   assert.equal(res.numbers.items[0].status, 'error');
   assert.match(res.numbers.items[0].detail.reason, /cannot read/);
-  assert.deepEqual(res.changes.items.map((i) => [i.path, i.status]), [['locked/b.md', 'phantom']]);
+  assert.deepEqual(res.changes.items.map((i) => [i.path, i.status, i.unreadable]), [['locked/b.md', 'phantom', true]]);
+  // the summary must not call a path that could not be looked up missing
+  const en = summarize(res, 'en'), zh = summarize(res, 'zh');
+  assert.match(en, /locked\/b\.md — reported, but the path cannot be looked up/);
+  assert.match(zh, /locked\/b\.md — 回报列了，但路径查不了/);
+  assert.ok(!/does not exist|不存在|undefined/.test(en + zh), en + '\n' + zh);
 });
 
 test('distinct sibling directories on a case-sensitive volume', (t) => {

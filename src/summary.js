@@ -28,7 +28,7 @@ const T = {
     },
     ch: {
       unreported: () => '回报没提到',
-      phantom: (c) => (c.outside ? '回报列了 --root 之外的路径' : c.exists ? '回报说改了，实际没变' : '回报列了，文件不存在'),
+      phantom: (c) => (c.outside ? '回报列了 --root 之外的路径' : c.unreadable ? '回报列了，但路径查不了（没有权限或链接循环）' : c.exists ? '回报说改了，实际没变' : '回报列了，文件不存在'),
       forbidden: () => '改了不该改的文件',
       kind_differs: (c) => `回报写的是 ${c.reported}，实际是 ${c.change}`,
     },
@@ -59,7 +59,7 @@ const T = {
     },
     ch: {
       unreported: () => 'not in the report',
-      phantom: (c) => (c.outside ? 'reported a path outside --root' : c.exists ? 'reported as changed, but unchanged' : 'reported, but the file does not exist'),
+      phantom: (c) => (c.outside ? 'reported a path outside --root' : c.unreadable ? 'reported, but the path cannot be looked up (no permission or a link loop)' : c.exists ? 'reported as changed, but unchanged' : 'reported, but the file does not exist'),
       forbidden: () => 'changed a file outside the allowed area',
       kind_differs: (c) => `reported as ${c.reported}, actually ${c.change}`,
     },
