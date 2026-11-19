@@ -10,6 +10,21 @@ const NOCASE = process.platform === 'win32' || process.platform === 'darwin';
 
 export { ScanError } from './workspace.js';
 
+/** Files of 0.1.1 and earlier snapshots above this size were recorded by size alone (sha256: null). */
+const LEGACY_UNHASHED = MAX_BYTES * 8;
+const CHUNK = Buffer.allocUnsafe(1 << 20);
+
+/** Size and SHA-256 of an open file, read in pieces so that a file of any size can be hashed. */
+function hashOpen(fd) {
+  const hash = crypto.createHash('sha256');
+  let size = 0, n;
+  while ((n = fs.readSync(fd, CHUNK, 0, CHUNK.length, size)) > 0) {
+    hash.update(CHUNK.subarray(0, n));
+    size += n;
+  }
+  return { size, sha256: hash.digest('hex') };
+}
+
 /**
  * Snapshot every file under the workspace root: { rel: { size, sha256 } }, and { rel: { link } }
  * for symbolic links and junctions (the target is recorded, never followed). Throws ScanError when
@@ -19,35 +34,20 @@ export function takeSnapshot(ws) {
   const files = {};
   const idx = ws.index();
   const problems = [...ws.scanProblems];
-  // Bound descriptor usage and amortize the Windows handle query across each batch.
-  for (let i = 0; i < idx.length; i += 32) {
-    const opened = [];
-    try {
-      for (const rel of idx.slice(i, i + 32)) {
-        try { opened.push({ rel, ...ws.openFile(path.join(ws.root, rel)) }); }
-        catch (e) { if (e.code !== 'ENOENT') problems.push({ path: rel, reason: e.code ?? 'error' }); }
-      }
-      if (!opened.length) continue;
-      ws.verifyOpen(opened);
-      for (const { rel, fd, size } of opened) {
-        try {
-          const sha256 = size > MAX_BYTES * 8 ? null : crypto.createHash('sha256').update(fs.readFileSync(fd)).digest('hex');
-          files[rel] = { size, sha256 };
-        } catch (e) { problems.push({ path: rel, reason: e.code ?? 'error' }); }
-      }
-    } catch (e) {
-      problems.push({ path: opened[0].rel, reason: e.code ?? 'cannot verify open files' });
-    } finally {
-      for (const { fd } of opened) fs.closeSync(fd);
+  for (const rel of idx) {
+    let fd;
+    try { ({ fd } = ws.openFile(path.join(ws.root, rel))); }
+    catch (e) {
+      if (e.code !== 'ENOENT') problems.push({ path: rel, reason: e.code ?? 'error' });
+      continue;
     }
+    try { files[rel] = hashOpen(fd); }
+    catch (e) { problems.push({ path: rel, reason: e.code ?? 'error' }); }
+    finally { fs.closeSync(fd); }
   }
   for (const rel of ws.links()) {
-    try {
-      const abs = path.join(ws.root, rel);
-      const parent = path.dirname(abs);
-      if (parent !== ws.root && ws.locate(parent) !== 'inside') throw Object.assign(new Error('parent changed'), { code: 'ESTALE' });
-      files[rel] = { link: fs.readlinkSync(abs) };
-    } catch (e) {
+    try { files[rel] = { link: ws.linkTarget(rel) }; }
+    catch (e) {
       if (e.code !== 'ENOENT') problems.push({ path: rel, reason: e.code ?? 'error' });
     }
   }
@@ -62,13 +62,13 @@ export function isSnapshot(s) {
   if (s.tool !== 'agent-cite-check' || s.kind !== 'snapshot') return false;
   if (!s.files || typeof s.files !== 'object' || Array.isArray(s.files)) return false;
   return Object.values(s.files).every((f) => f && typeof f === 'object' &&
-    (typeof f.link === 'string' || (Number.isSafeInteger(f.size) && f.size >= 0 && (f.sha256 === null ? f.size > MAX_BYTES * 8 : typeof f.sha256 === 'string' && /^[a-f0-9]{64}$/.test(f.sha256)))));
+    (typeof f.link === 'string' || (Number.isSafeInteger(f.size) && f.size >= 0 && (f.sha256 === null ? f.size > LEGACY_UNHASHED : typeof f.sha256 === 'string' && /^[a-f0-9]{64}$/.test(f.sha256)))));
 }
 
 function differs(old, cur) {
   if ((old.link ?? null) !== (cur.link ?? null)) return true;
   if (cur.link != null) return false;
-  return old.size !== cur.size || (old.sha256 && cur.sha256 && old.sha256 !== cur.sha256);
+  return old.size !== cur.size || old.sha256 !== cur.sha256;
 }
 
 /** Changes between a saved snapshot and the workspace now. */
@@ -77,6 +77,13 @@ export function diffSnapshot(before, ws) {
   const prev = before.files ?? {};
   if (before.links !== true && ws.links().length) {
     throw new ScanError([{ path: '.', reason: 'old snapshot has no link baseline; take a new snapshot' }]);
+  }
+  // a file recorded by size alone (0.1.1 and earlier, over 512 MiB) that still has that size:
+  // whether its content changed cannot be told, so the check cannot pass
+  const unhashed = Object.keys(now).filter((rel) => prev[rel] && prev[rel].sha256 === null && prev[rel].link == null &&
+    now[rel].link == null && prev[rel].size === now[rel].size);
+  if (unhashed.length) {
+    throw new ScanError(unhashed.map((rel) => ({ path: rel, reason: 'old snapshot has no digest of this file; take a new snapshot' })));
   }
   const out = [];
   for (const [rel, cur] of Object.entries(now)) {
@@ -183,7 +190,8 @@ export function reconcile(actual, reported, ws, opts = {}) {
     // only paths inside the root are looked up; a listed path outside it is not opened at all
     const location = r.inRoot ? ws.locate(path.join(ws.root, r.rel)) : 'outside';
     const exists = location === 'inside';
-    items.push({ path: r.rel, change: null, reported: r.change ?? true, status: 'phantom', exists, ...(location === 'outside' ? { outside: true } : {}), at: r.at });
+    const where = location === 'outside' ? { outside: true } : location === 'unreadable' ? { unreadable: true } : {};
+    items.push({ path: r.rel, change: null, reported: r.change ?? true, status: 'phantom', exists, ...where, at: r.at });
   }
   return items;
 }

@@ -90,7 +90,7 @@ These are compared with what actually changed, from a snapshot (`--before`) or f
 
 The report file itself, the snapshot and the `--json` output are left out of the comparison.
 
-A snapshot stores the size and SHA-256 of every file under the root (files over 512 MB: size only), skipping `.git/`, `node_modules/` and `--ignore` globs.
+A snapshot stores the size and SHA-256 of every file under the root, skipping `.git/`, `node_modules/` and `--ignore` globs.
 
 ## 4. JSON reports
 

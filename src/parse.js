@@ -21,8 +21,11 @@ const CITE_RE = new RegExp(
 const QUOTE_PAIRS = { '「': '」', '『': '』', '“': '”', '"': '"', '«': '»' };
 
 const OPS = 'lines|count|lines_with|files|rows|sum|avg|min|max|distinct';
+// The claimed value is read whole: digits, separators and exponents up to the first other
+// character. Sentence punctuation at its end is dropped; whether the rest is a valid number is
+// decided when the claim is checked, so a malformed value ("1e2e3", "1.2.3") fails its item.
 const NUM_RE = new RegExp(
-  String.raw`${BT}?\b(?<op>${OPS})\((?<args>[^${BT}\n]*?)\)\s*={1,2}\s*(?<val>[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)?(?:\.\d+)?(?:(?<=\d)[eE][-+]?\d*)?%?)(?![\deE.])${BT}?`,
+  String.raw`${BT}?\b(?<op>${OPS})\((?<args>[^${BT}\n]*?)\)\s*={1,2}\s*(?<val>[-+]?(?:[\d.,]|(?<=\d)[eE][-+]?)*%?)${BT}?`,
   'g',
 );
 
@@ -50,13 +53,14 @@ function quoteAfter(text, pos) {
   let offset = fragment.indexOf(close);
   if (offset < 0) return null;
   if (open === '"') {
+    // the limit bounds where the closing quote may be, not the spaces that follow it
     const limit = i + 1 + fragment.length;
     const completeLine = limit === text.length || text[limit] === '\n';
     const first = offset;
     offset = -1;
     for (let j = first; j >= 0; j = fragment.indexOf(close, j + 1)) {
       let k = i + j + 2;
-      while (k < limit && (text[k] === ' ' || text[k] === '\t')) k++;
+      while (k < text.length && (text[k] === ' ' || text[k] === '\t')) k++;
       if (k === text.length || /[\n|,;，；)）\]]/.test(text[k]) || text.startsWith('\\|', k)) {
         offset = j;
         break;
@@ -79,13 +83,14 @@ export function parseText(text, { source = 'report', baseLine = 0 } = {}) {
   const files = [];
 
   for (const m of text.matchAll(NUM_RE)) {
-    if (!/\d/.test(m.groups.val)) continue;
+    const val = m.groups.val.replace(/[.,]+$/, '');
+    if (!/\d/.test(val)) continue;
     numbers.push({
       at: `${source}:${baseLine + lineOf(text, m.index)}`,
       expr: `${m.groups.op}(${m.groups.args})`,
       op: m.groups.op,
       args: m.groups.args,
-      claimed: m.groups.val,
+      claimed: val,
     });
   }
 

@@ -67,7 +67,7 @@ File changes 3: 1 match the report, 2 do not
 
 ## 安装
 
-需要 Node.js 20 及以上，不用编译。 核对文件句柄时，Linux 使用 procfs，macOS 使用系统 Perl，Windows 使用系统 Windows PowerShell 调用句柄 API。无法验证句柄时，读取会失败。
+需要 Node.js 20 及以上，不用编译，读文件时也不启动别的程序。
 
 - **从 GitHub 装到 PATH**：`npm install -g github:keienhrri-bit/agent-cite-check`，之后直接用 `agent-cite-check ...`
 - **在克隆目录里直接跑**：`node <克隆目录>/bin/agent-cite-check.js ...`，或者 `npm install -g <克隆目录>` 装到 PATH

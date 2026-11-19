@@ -4,10 +4,12 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import cp from 'node:child_process';
+import { syncBuiltinESMExports } from 'node:module';
 import { makeWorkspace } from './helpers.js';
 import { Workspace } from '../src/workspace.js';
 import { runChecks } from '../src/check.js';
-import { takeSnapshot } from '../src/changes.js';
+import { takeSnapshot, ScanError } from '../src/changes.js';
 
 const SECRET = 'DATABASE_PASSWORD=fake-secret-value-123';
 const GUESS = 'DATABASE_PASSWORD=unknown';
@@ -111,6 +113,7 @@ test('UNC paths are refused without any file system call', (t) => {
   const { root } = setup();
   const ws = new Workspace(root);
   ws.index(); // walking the root itself is fine; only the report's paths are under test
+  const before = takeSnapshot(ws);
   const spies = [
     t.mock.method(fs, 'statSync'),
     t.mock.method(fs, 'lstatSync'),
@@ -130,7 +133,6 @@ test('UNC paths are refused without any file system call', (t) => {
     citations: [{ file: '//server/share/secret.env', line: 1, quote: GUESS }, { file: '\\\\?\\UNC\\server\\share\\a.md', line: 1, quote: GUESS }],
     numbers: [{ expr: 'lines(//server/share/a.md)', claim: 1 }],
   });
-  const before = { tool: 'agent-cite-check', kind: 'snapshot', files: { 'notes.md': { size: 33, sha256: null }, 'sub/x.md': { size: 2, sha256: null } } };
   const r1 = runChecks(report, ws, { before });
   const r2 = runChecks(json, ws, {});
   assert.equal(r1.citations.items[0].detail.reason, 'outside_root');
@@ -162,10 +164,14 @@ test('a location decision is refreshed before use', (t) => {
 
 test('text and snapshot reads use a verified descriptor', (t) => {
   const { root } = setup();
-  const read = fs.readFileSync;
+  const read = fs.readFileSync, readSync = fs.readSync;
   t.mock.method(fs, 'readFileSync', (fd, ...args) => {
     assert.equal(typeof fd, 'number');
     return read(fd, ...args);
+  });
+  t.mock.method(fs, 'readSync', (fd, ...args) => {
+    assert.equal(typeof fd, 'number');
+    return readSync(fd, ...args);
   });
   const ws = new Workspace(root);
   assert.equal(ws.load(path.join(root, 'notes.md')).lines.length, 1);
@@ -232,16 +238,217 @@ test('moving the containing directory after open invalidates the handle location
   const dir = path.join(root, 'sub');
   const stat = fs.fstatSync;
   const ws = new Workspace(root);
+  let moved = false, locked = false;
   t.mock.method(fs, 'fstatSync', (fd, opts) => {
-    try { fs.renameSync(dir, path.join(base, 'moved')); }
-    catch (e) {
-      if (process.platform !== 'win32' || !['EPERM', 'EACCES', 'EBUSY'].includes(e.code)) throw e;
-      t.skip('filesystem locks the containing directory while its child is open');
+    if (!moved && !locked) {
+      try { fs.renameSync(dir, path.join(base, 'moved')); moved = true; }
+      catch (e) {
+        if (process.platform !== 'win32' || !['EPERM', 'EACCES', 'EBUSY'].includes(e.code)) throw e;
+        locked = true;
+      }
     }
     return stat(fd, opts);
   });
   const result = ws.load(path.join(dir, 'x.md'));
-  if (!fs.existsSync(dir)) assert.equal(result.error, 'outside_root');
+  if (locked) return t.skip('filesystem locks the containing directory while its child is open');
+  assert.ok(moved, 'the folder was moved while the file was open');
+  assert.equal(result.error, 'outside_root');
+});
+
+// Replace a folder inside the root with a junction (a directory symlink elsewhere) to `target`, and undo it.
+function swapIn(dir, target) {
+  fs.renameSync(dir, dir + '-old');
+  fs.symlinkSync(target, dir, 'junction');
+}
+function swapBack(dir) {
+  fs.unlinkSync(dir);
+  fs.renameSync(dir + '-old', dir);
+}
+function canLink(base) {
+  const probe = path.join(base, 'probe-link');
+  if (!tryLink(base, probe, 'junction')) return false;
+  fs.unlinkSync(probe);
+  return true;
+}
+
+// The checks around the open: a folder on the way to the file is swapped for a link to a folder
+// outside the root right before the file is opened, so the descriptor holds the outside file.
+// Each case must be refused by the checks made after the open, for both reads and snapshots.
+for (const [name, undo] of [['and left in place', false], ['and swapped back before the check', true]]) {
+  test(`a folder swapped for an outside link around the open is refused (${name})`, (t) => {
+    const { base, root } = setup();
+    if (!canLink(base)) return t.skip('cannot create links here');
+    const evil = path.join(base, 'evil');
+    fs.mkdirSync(evil);
+    fs.writeFileSync(path.join(evil, 'x.md'), `${SECRET}\n`);
+    const dir = path.join(root, 'sub');
+    const file = path.join(dir, 'x.md');
+    const real = fs.realpathSync.native(file);
+    const reads = { load: (ws) => ws.load(file), snapshot: (ws) => takeSnapshot(ws) };
+    for (const [kind, read] of Object.entries(reads)) {
+      const ws = new Workspace(root);
+      ws.index();
+      let swapped = false, restored = false;
+      const lstat = fs.lstatSync, fstat = fs.fstatSync;
+      const spies = [
+        // openFile records the identity of the file it is about to open: swap first, so it matches
+        t.mock.method(fs, 'lstatSync', (p, opts) => {
+          if (!swapped && p === real && opts?.bigint) { swapped = true; swapIn(dir, evil); }
+          return lstat(p, opts);
+        }),
+        t.mock.method(fs, 'fstatSync', (fd, opts) => {
+          if (undo && swapped && !restored) { restored = true; swapBack(dir); }
+          return fstat(fd, opts);
+        }),
+      ];
+      let result, error;
+      try { result = read(ws); } catch (e) { error = e; }
+      for (const s of spies) s.mock.restore();
+      assert.ok(swapped, kind);
+      assert.equal(restored, undo, kind);
+      if (!undo) swapBack(dir);
+      assert.ok(!leaks({ result, error: error?.message }), kind);
+      if (kind === 'load') assert.equal(result.error, 'outside_root');
+      else assert.ok(error instanceof ScanError && /sub\/x\.md/.test(error.message) && !/notes\.md/.test(error.message), String(error));
+    }
+  });
+}
+
+// Swapped in for the open, out for the second path lookup, in again for the identity read after it:
+// the identity recorded before the open (an unswapped folder) still tells the objects apart.
+test('a folder swapped in, out and in again around the open is refused', (t) => {
+  const { base, root } = setup();
+  if (!canLink(base)) return t.skip('cannot create links here');
+  const evil = path.join(base, 'evil');
+  fs.mkdirSync(evil);
+  fs.writeFileSync(path.join(evil, 'x.md'), `${SECRET}\n`);
+  const dir = path.join(root, 'sub');
+  const file = path.join(dir, 'x.md');
+  const real = fs.realpathSync.native(file);
+  const ws = new Workspace(root);
+  const steps = [];
+  const open = fs.openSync, fstat = fs.fstatSync, lstat = fs.lstatSync;
+  const spies = [
+    t.mock.method(fs, 'openSync', (p, ...rest) => {
+      if (p === real && !steps.length) { steps.push('in'); swapIn(dir, evil); }
+      return open(p, ...rest);
+    }),
+    t.mock.method(fs, 'fstatSync', (fd, opts) => {
+      if (steps.length === 1) { steps.push('out'); swapBack(dir); }
+      return fstat(fd, opts);
+    }),
+    t.mock.method(fs, 'lstatSync', (p, opts) => {
+      if (steps.length === 2 && p === real && opts?.bigint) { steps.push('in'); swapIn(dir, evil); }
+      return lstat(p, opts);
+    }),
+  ];
+  const result = ws.load(file);
+  for (const s of spies) s.mock.restore();
+  if (steps.length === 3) swapBack(dir);
+  // refused at the first identity comparison; without it, the third step happens and passes
+  assert.deepEqual(steps.slice(0, 2), ['in', 'out']);
+  assert.equal(result.error, 'outside_root');
+  assert.ok(!leaks(result));
+});
+
+// 0.1.1 asked a PowerShell (Windows) or Perl (macOS) process where each open file was: about 0.35 s
+// per cited file on Windows. The checks now run in this process.
+test('reading cited files starts no other process', (t) => {
+  const files = Object.fromEntries(Array.from({ length: 32 }, (_, i) => [`d${i % 4}/f${i}.md`, `The value for item ${i} is ${i * 7}.\n`]));
+  const root = makeWorkspace(files);
+  const started = [];
+  for (const name of ['execFileSync', 'execSync', 'spawnSync', 'execFile', 'exec', 'spawn', 'fork']) {
+    t.mock.method(cp, name, () => { started.push(name); throw new Error('no other process expected'); });
+  }
+  syncBuiltinESMExports();
+  t.after(() => { t.mock.restoreAll(); syncBuiltinESMExports(); });
+  const report = Object.keys(files).map((f, i) => `- ${f}:1 "The value for item ${i} is ${i * 7}."`).join('\n');
+  const res = runChecks(report, new Workspace(root));
+  const snap = takeSnapshot(new Workspace(root));
+  assert.deepEqual(started, []);
+  assert.equal(res.citations.passed, 32);
+  assert.equal(Object.keys(snap.files).length, 32);
+});
+
+test('a folder swapped for an outside link while it is listed is left out of the index', (t) => {
+  const { base, root } = setup();
+  if (!canLink(base)) return t.skip('cannot create links here');
+  const dir = path.join(root, 'sub');
+  const readdir = fs.readdirSync;
+  let swapped = false;
+  t.mock.method(fs, 'readdirSync', function (p, ...rest) {
+    if (!swapped && path.basename(String(p)) === 'sub') { swapped = true; swapIn(dir, path.join(base, 'outside')); }
+    return readdir.call(this, p, ...rest);
+  });
+  const ws = new Workspace(root);
+  const idx = ws.index();
+  assert.ok(swapped);
+  assert.deepEqual(idx, ['notes.md']);
+  assert.deepEqual(ws.scanProblems.map((p) => p.path), ['sub']);
+});
+
+test('a root swapped for an outside link after the start is not listed', (t) => {
+  const { base, root } = setup();
+  if (!canLink(base)) return t.skip('cannot create links here');
+  const ws = new Workspace(root);
+  swapIn(root, path.join(base, 'outside'));
+  assert.deepEqual(ws.index(), []);
+  assert.deepEqual(ws.scanProblems.map((p) => p.path), ['.']);
+});
+
+test('a link target is not recorded from a folder swapped in while it is read', (t) => {
+  const { base, root } = setup();
+  if (!canLink(base)) return t.skip('cannot create links here');
+  const docs = path.join(root, 'docs');
+  const evil = path.join(base, 'evil');
+  const hidden = path.join(base, 'hidden-target-name');
+  for (const d of [docs, evil, hidden]) fs.mkdirSync(d);
+  tryLink(path.join(root, 'sub'), path.join(docs, 'j'), 'junction');
+  tryLink(hidden, path.join(evil, 'j'), 'junction');
+  const ws = new Workspace(root);
+  const readlink = fs.readlinkSync;
+  let swapped = false;
+  t.mock.method(fs, 'readlinkSync', function (p, ...rest) {
+    if (!swapped && path.basename(String(p)) === 'j') { swapped = true; swapIn(docs, evil); }
+    return readlink.call(this, p, ...rest);
+  });
+  let snap = null, error = null;
+  try { snap = takeSnapshot(ws); } catch (e) { error = e; }
+  assert.ok(swapped);
+  assert.ok(!JSON.stringify(snap ?? {}).includes('hidden-target-name'));
+  assert.ok(error instanceof ScanError && /docs\/j/.test(error.message), String(error));
+});
+
+test('a link inside an aliased root may point at the canonical absolute path', (t) => {
+  const { base, root } = setup();
+  const alias = path.join(base, 'alias');
+  // macOS: /var is /private/var. Here the root is reached through a junction (a symlink elsewhere).
+  if (!tryLink(root, alias, 'junction')) return t.skip('cannot create links here');
+  // a junction stores an absolute target: the canonical spelling of a folder inside the root
+  tryLink(fs.realpathSync.native(path.join(root, 'sub')), path.join(root, 'canon'), 'junction');
+  const res = runChecks('- canon/x.md:1 "x"', new Workspace(alias), { minQuote: 1 });
+  assert.equal(res.citations.items[0].status, 'ok');
+  assert.equal(new Workspace(alias).locate(path.join(fs.realpathSync.native(root), 'notes.md')), 'inside');
+});
+
+test('a path that cannot be looked up fails its own item, not the whole check', (t) => {
+  const { root } = setup();
+  fs.mkdirSync(path.join(root, 'locked'));
+  fs.writeFileSync(path.join(root, 'locked', 'a.md'), 'alpha beta\n');
+  const opts = { ignore: ['locked/**'] };
+  const before = takeSnapshot(new Workspace(root, opts));
+  // like a folder without search permission: its entries cannot be looked up
+  const lstat = fs.lstatSync;
+  t.mock.method(fs, 'lstatSync', function (p, ...rest) {
+    if (path.basename(path.dirname(String(p))) === 'locked') throw Object.assign(new Error('denied'), { code: 'EACCES' });
+    return lstat.call(this, p, ...rest);
+  });
+  const report = ['- locked/a.md:1 "alpha beta"', '- notes.md:1 "The pump was serviced on 12 May."', '`lines(locked/a.md) = 1`', '[+] locked/b.md'].join('\n');
+  const res = runChecks(report, new Workspace(root, opts), { before });
+  assert.deepEqual(res.citations.items.map((i) => [i.status, i.detail?.reason]), [['unreadable', 'unreadable'], ['ok', undefined]]);
+  assert.equal(res.numbers.items[0].status, 'error');
+  assert.match(res.numbers.items[0].detail.reason, /cannot read/);
+  assert.deepEqual(res.changes.items.map((i) => [i.path, i.status]), [['locked/b.md', 'phantom']]);
 });
 
 test('distinct sibling directories on a case-sensitive volume', (t) => {

@@ -77,6 +77,7 @@ test('snapshot command writes a file', () => {
   const r = run(['snapshot', '--root', root, '-o', out]);
   assert.equal(r.code, 0);
   const expected = JSON.parse(fs.readFileSync(out, 'utf8')).files;
+  assert.deepEqual(expected, { 'a.md': { size: 2, sha256: createHash('sha256').update('a\n').digest('hex') } });
   const long = out + '.long';
   assert.equal(run(['snapshot', '--root', root, '--out', long]).code, 0);
   assert.deepEqual(JSON.parse(fs.readFileSync(long, 'utf8')).files, expected);

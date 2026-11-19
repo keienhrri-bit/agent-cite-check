@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { check } from './helpers.js';
 import { parseCsv, splitArgs, sameNumber } from '../src/numbers.js';
+import { parseText } from '../src/parse.js';
 
 const FILES = {
   'log.md': 'TODO one\nok\nTODO two TODO\nＴＯＤＯ wide\n',
@@ -150,7 +151,7 @@ test('nonrepresentable exponents and incomplete claims cannot pass', () => {
   assert.equal(sameNumber('1e999', 1, 'sum'), false);
   assert.equal(sameNumber('1e-999', 0, 'sum'), false);
   const items = nums('lines(notes/a.md) = 1e+');
-  assert.ok(!items.some(x => x.status === 'ok'));
+  assert.deepEqual(items.map(x => [x.claimed, x.status]), [['1e+', 'error']]);
 });
 
 function childItems(code) {
@@ -176,5 +177,50 @@ test('decimal midpoint rounds away from zero exactly once', () => {
   assert.equal(sameNumber('-1.2', -1.25, 'avg'), false);
 });
 test('a truncated exponent is not a successful numeric claim', () => {
-  assert.ok(!nums('lines(notes/a.md) = 1e+').some(i => i.pass));
+  const items = nums('lines(notes/a.md) = 1e+');
+  assert.equal(items.length, 1);
+  assert.equal(items[0].pass, false);
+});
+
+// --- fixes from the 0.1.2 review ---
+
+test('sums are added exactly: float noise decides nothing, a correct 0 passes', () => {
+  const csv = (vals) => 'v\n' + vals.join('\n') + '\n';
+  const files = {
+    'a.csv': csv(['0.1', '0.2', '-0.3']),
+    'b.csv': csv(['100000000.1', '-100000000', '-0.1']),
+    'c.csv': csv(Array(10).fill('0.1')),
+    'd.csv': csv(['1000000000000.5']),
+    'e.csv': csv(['1', '1.0000000000000002']),
+    'f.csv': csv(['"1,200"', '0.25', '1e2', '12%']),
+  };
+  const claims = [
+    ['sum(a.csv, v) = 0', 'ok'], ['sum(a.csv, v) = 0.0', 'ok'], ['avg(a.csv, v) = 0', 'ok'],
+    ['sum(b.csv, v) = 0', 'ok'], ['sum(c.csv, v) = 1', 'ok'],
+    ['sum(d.csv, v) = 1000000000000', 'mismatch'], ['sum(d.csv, v) = 1000000000000.5', 'ok'],
+    // only sums were ever forgiven float noise; a maximum is one of the values, compared as written
+    ['max(e.csv, v) = 1', 'mismatch'], ['max(e.csv, v) = 1.0000000000000002', 'ok'],
+    ['sum(f.csv, v) = 1312.25', 'ok'],
+  ];
+  const r = check(files, claims.map(([c]) => '`' + c + '`').join('\n')).numbers.items;
+  assert.deepEqual(r.map((x) => [x.expr + ' = ' + x.claimed, x.status]), claims.map(([c, s]) => [c, s]));
+});
+
+test('a malformed claimed value fails its item instead of disappearing', () => {
+  const r = check({ 'a.md': 'x\n', 'b.md': 'y\nz\n' }, 'lines(a.md) = 1e2e3\n`lines(b.md) = 2`');
+  assert.deepEqual(r.numbers.items.map((x) => [x.claimed, x.status]), [['1e2e3', 'error'], ['2', 'ok']]);
+  assert.match(r.numbers.items[0].detail.reason, /1e2e3/);
+  assert.equal(r.verdict, 'fail');
+});
+
+test('claimed values are read whole; sentence punctuation after them is not part of them', () => {
+  const cases = [
+    ['lines(b.md) = 2.', '2'], ['lines(b.md) = 2。', '2'], ['lines(b.md) = 2, and so on', '2'], ['(lines(b.md) = 2)', '2'],
+    ['`lines(b.md) = 2`.', '2'], ['`lines(b.md) = 2`', '2'], ['lines(b.md) = 2%', '2%'], ['lines(b.md) = 2；', '2'],
+    ['lines(b.md) = 1,234.', '1,234'], ['lines(b.md) = 1.5e-3.', '1.5e-3'], ['lines(b.md) = 5-10', '5'],
+    ['lines(b.md) = 1.2.3', '1.2.3'], ['lines(b.md) = 1,2345', '1,2345'], ['lines(b.md) = 1e2e3', '1e2e3'],
+  ];
+  for (const [text, claimed] of cases) assert.deepEqual(parseText(text).numbers.map((n) => n.claimed), [claimed], text);
+  const r = check({ 'b.md': 'y\nz\n' }, 'lines(b.md) = 2.\nlines(b.md) = 1,2345\nlines(b.md) = 1.2.3').numbers.items;
+  assert.deepEqual(r.map((x) => x.status), ['ok', 'error', 'error']);
 });

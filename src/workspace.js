@@ -3,7 +3,6 @@
 // UNC paths and links that lead out of the root are refused before the file is opened.
 import fs from 'node:fs';
 import path from 'node:path';
-import { descriptorPaths } from './descriptor.js';
 import { decode, splitLines, normalize, globToRegExp, toPosix } from './text.js';
 
 const DEFAULT_IGNORE = ['.git/**', 'node_modules/**'];
@@ -15,6 +14,17 @@ const NOCASE = process.platform === 'win32' || process.platform === 'darwin';
 export const isUnc = (p) => /^[\\/]{2}/.test(String(p).trim());
 
 const inside = (rel) => !!rel && rel !== '..' && !rel.startsWith('..' + path.sep) && !path.isAbsolute(rel);
+
+const outsideError = (message) => Object.assign(new Error(message), { code: 'OUTSIDE' });
+const staleError = (message) => Object.assign(new Error(message), { code: 'ESTALE' });
+/** Same file system object: device and inode (the NTFS file ID on Windows), compared as bigints. */
+const sameObject = (a, b) => a.dev === b.dev && a.ino === b.ino;
+
+/** Where an open descriptor points, from procfs on Linux; null elsewhere or when procfs is missing. */
+function descriptorPath(fd) {
+  if (process.platform !== 'linux') return null;
+  try { return fs.readlinkSync(`/proc/self/fd/${fd}`); } catch { return null; }
+}
 
 /** The folder could not be scanned completely, so a change check would miss part of it. */
 export class ScanError extends Error {
@@ -34,19 +44,26 @@ export class Workspace {
     this._index = null;
     this._links = null;
     this._realRoot = fs.realpathSync.native(this.root);
+    this._realPrefix = this._realRoot.endsWith(path.sep) ? this._realRoot : this._realRoot + path.sep;
     /** Parts of the tree the last index() could not cover: [{ path, reason }]. */
     this.scanProblems = [];
   }
 
-  /** Path relative to root, posix separators; null if outside root. Purely lexical: no file access. */
+  /**
+   * Path relative to root, posix separators; null if outside root. Purely lexical: no file access.
+   * The canonical spelling of the root counts too (macOS /private/var for /var, a junction's target).
+   */
   rel(abs) {
     if (isUnc(abs) && !isUnc(this.root)) return null;
     const r = path.relative(this.root, abs);
-    return inside(r) ? toPosix(r) : null;
+    if (inside(r)) return toPosix(r);
+    const resolved = path.resolve(abs);
+    return this.containsReal(resolved) ? toPosix(resolved.slice(this._realPrefix.length)) : null;
   }
 
   /**
-   * Where a path really is once links and junctions are followed: 'inside', 'outside' or 'missing'.
+   * Where a path really is once links and junctions are followed: 'inside', 'outside', 'missing',
+   * or 'unreadable' when it cannot be looked up (a folder without search permission, a link loop).
    * Paths that are outside the root as written (UNC paths included) are answered without file access.
    */
   locate(abs) {
@@ -56,8 +73,7 @@ export class Workspace {
       const real = fs.realpathSync.native(abs);
       return this.containsReal(real) ? 'inside' : 'outside';
     } catch (e) {
-      if (e.code !== 'ENOENT' && e.code !== 'ENOTDIR') throw e;
-      return 'missing';
+      return e.code === 'ENOENT' || e.code === 'ENOTDIR' ? 'missing' : 'unreadable';
     }
   }
 
@@ -74,8 +90,8 @@ export class Workspace {
       const target = fs.readlinkSync(child);
       if (isUnc(target) || ++hops > 40) return false;
       const resolved = path.resolve(dir, target);
-      const rel = this.rel(resolved);
-      if (rel === null && resolved !== this.root) return false;
+      const rel = resolved === this.root || resolved === this._realRoot ? '' : this.rel(resolved);
+      if (rel === null) return false;
       parts = [...(rel ? rel.split('/') : []), ...parts.slice(i + 1)];
       dir = this.root;
       i = -1;
@@ -84,24 +100,28 @@ export class Workspace {
   }
 
   containsReal(real) {
-    const prefix = this._realRoot.endsWith(path.sep) ? this._realRoot : this._realRoot + path.sep;
-    return real.startsWith(prefix) && real.length > prefix.length;
+    return real.startsWith(this._realPrefix) && real.length > this._realPrefix.length;
   }
 
-  /** Read only through the descriptor whose object and location were checked. */
+  /**
+   * Open a regular file inside the root for reading: { fd, size }; the caller closes fd.
+   * Contents are read only through this descriptor, after two checks of what it holds. Before the
+   * open: the object at the canonical path is the one opened, not a replacement. After: verifyOpen.
+   */
   openFile(abs) {
     const location = this.locate(abs);
-    if (location !== 'inside') throw Object.assign(new Error(location), { code: location === 'missing' ? 'ENOENT' : 'OUTSIDE' });
+    if (location !== 'inside') {
+      throw Object.assign(new Error(location), { code: { missing: 'ENOENT', outside: 'OUTSIDE' }[location] ?? 'EACCES' });
+    }
     const real = fs.realpathSync.native(abs);
-    if (!this.containsReal(real)) throw Object.assign(new Error('outside root'), { code: 'OUTSIDE' });
+    if (!this.containsReal(real)) throw outsideError('outside root');
     const expected = fs.lstatSync(real, { bigint: true });
     if (!expected.isFile()) throw new Error('not a regular file');
     const fd = fs.openSync(real, fs.constants.O_RDONLY | (fs.constants.O_NOFOLLOW ?? 0) | (fs.constants.O_NONBLOCK ?? 0));
     try {
       const st = fs.fstatSync(fd, { bigint: true });
-      if (!st.isFile() || st.dev !== expected.dev || st.ino !== expected.ino) {
-        throw Object.assign(new Error('file moved outside root or replaced'), { code: 'OUTSIDE' });
-      }
+      if (!st.isFile() || !sameObject(st, expected)) throw outsideError('file replaced while opening');
+      this.verifyOpen(fd, real, st);
       return { fd, size: Number(st.size) };
     } catch (error) {
       fs.closeSync(fd);
@@ -109,11 +129,56 @@ export class Workspace {
     }
   }
 
-  verifyOpen(files) {
-    const paths = descriptorPaths(files.map(f => f.fd));
-    if (paths.length !== files.length || paths.some(p => !this.containsReal(p))) {
-      throw Object.assign(new Error('opened file outside root'), { code: 'OUTSIDE' });
+  /**
+   * After the open, the canonical path must still lead, inside the root, to the object the
+   * descriptor holds. This catches a folder on the way swapped for a link elsewhere around the open
+   * (whether or not it is swapped back), and a folder moved out of the root after it. A failure
+   * here means the file left the place that was checked, so it counts as outside. Linux also asks
+   * procfs for the descriptor's own path.
+   */
+  verifyOpen(fd, real, st) {
+    let now, there;
+    try {
+      now = fs.realpathSync.native(real);
+      there = fs.lstatSync(now, { bigint: true });
+    } catch {
+      throw outsideError('file moved while opening');
     }
+    if (!this.containsReal(now) || !sameObject(there, st)) throw outsideError('file moved outside root or replaced');
+    const where = descriptorPath(fd);
+    if (where !== null && !this.containsReal(where)) throw outsideError('opened file outside root');
+  }
+
+  /**
+   * Canonical path and identity of a folder inside the root (the root itself included). A folder is
+   * read by path between this and sameFolder(): if it was swapped for a link elsewhere and not
+   * swapped back, or replaced, the read is thrown away.
+   */
+  folder(dir) {
+    const location = dir === this.root ? 'inside' : this.locate(dir);
+    if (location === 'unreadable') throw Object.assign(new Error('cannot look up folder'), { code: 'EACCES' });
+    if (location !== 'inside') throw staleError('folder changed');
+    const real = fs.realpathSync.native(dir);
+    if (dir === this.root ? real !== this._realRoot : !this.containsReal(real)) throw staleError('folder moved');
+    const st = fs.lstatSync(real, { bigint: true });
+    if (!st.isDirectory()) throw staleError('not a folder');
+    return { real, st };
+  }
+
+  sameFolder(dir, before) {
+    const real = fs.realpathSync.native(dir);
+    const st = fs.lstatSync(real, { bigint: true });
+    if (real !== before.real || !sameObject(st, before.st)) throw staleError('folder changed while read');
+  }
+
+  /** Target of a link inside the root (posix relative path), read between two checks of its folder. */
+  linkTarget(rel) {
+    const abs = path.join(this.root, rel);
+    const parent = path.dirname(abs);
+    const before = this.folder(parent);
+    const target = fs.readlinkSync(path.join(before.real, path.basename(abs)));
+    this.sameFolder(parent, before);
+    return target;
   }
 
   ignored(rel) {
@@ -133,8 +198,9 @@ export class Workspace {
     const walk = (dir) => {
       let entries;
       try {
-        if (dir !== this.root && this.locate(dir) !== 'inside') throw Object.assign(new Error('directory changed'), { code: 'ESTALE' });
-        entries = fs.readdirSync(dir, { withFileTypes: true });
+        const before = this.folder(dir);
+        entries = fs.readdirSync(before.real, { withFileTypes: true });
+        this.sameFolder(dir, before);
       } catch (e) {
         if (e.code !== 'ENOENT') problems.push({ path: toPosix(path.relative(this.root, dir)) || '.', reason: e.code ?? 'error' });
         return;
@@ -178,7 +244,8 @@ export class Workspace {
    * Resolve a path as written by an agent. Tries, in order: the path itself when it lies inside the
    * root, then the file index (the agent wrote a longer or shorter path, an absolute path from
    * another machine, or glued words in front of the name). Paths outside the root are never opened.
-   * Returns { abs: string[], how }; how is 'outside' when the path points out of the root.
+   * Returns { abs: string[], how }; how is 'outside' when the path points out of the root, and
+   * 'unreadable' when the path as written cannot be looked up.
    */
   resolve(written) {
     let p = String(written).trim().replace(/^`+|`+$/g, '').replace(/^["']|["']$/g, '');
@@ -190,7 +257,7 @@ export class Workspace {
     const outside = this.rel(direct) === null;
     if (!outside) {
       const location = this.locate(direct);
-      if (location === 'outside') return { abs: [], how: 'outside' };
+      if (location === 'outside' || location === 'unreadable') return { abs: [], how: location };
       if (location === 'inside' && isFile(direct)) return { abs: [direct], how: 'exact' };
     }
 
@@ -234,10 +301,8 @@ export class Workspace {
     let res;
     try {
       if (this.cache.has(abs) && this.locate(abs) === 'inside') return this.cache.get(abs);
-      const file = this.openFile(abs);
+      const { fd, size } = this.openFile(abs);
       try {
-        this.verifyOpen([file]);
-        const { fd, size } = file;
         if (size > MAX_BYTES) return { error: 'too_large' };
         const { text, encoding } = decode(fs.readFileSync(fd));
         if (text === null) res = { error: 'binary' };
@@ -250,7 +315,7 @@ export class Workspace {
           res = { text, lines, norm, offs, joined: norm.join(''), encoding };
         }
       } finally {
-        fs.closeSync(file.fd);
+        fs.closeSync(fd);
       }
     } catch (e) {
       res = { error: e.code === 'OUTSIDE' ? 'outside_root' : e.code === 'ENOENT' ? 'missing' : 'unreadable' };

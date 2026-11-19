@@ -183,6 +183,39 @@ test('only valid snapshot sizes and digests are accepted', () => {
   }
 });
 
+// --- fixes from the 0.1.2 review ---
+
+test('a same-length edit to a file over 512 MiB is a change', (t) => {
+  const root = makeWorkspace({ 'a.md': 'a\n' });
+  const big = path.join(root, 'big.bin');
+  fs.writeFileSync(big, '');
+  fs.truncateSync(big, 512 * 1024 * 1024 + 1); // sparse where the file system allows
+  t.after(() => fs.rmSync(big, { force: true }));
+  const before = takeSnapshot(new Workspace(root));
+  assert.match(String(before.files['big.bin'].sha256), /^[a-f0-9]{64}$/);
+  assert.equal(before.files['big.bin'].size, 512 * 1024 * 1024 + 1);
+  const fd = fs.openSync(big, 'r+');
+  fs.writeSync(fd, 'x', 300 * 1024 * 1024);
+  fs.closeSync(fd);
+  const res = runChecks('', new Workspace(root), { before, allowEmpty: true });
+  assert.deepEqual(byPath(res), { 'big.bin': 'unreported' });
+});
+
+test('an old snapshot without a digest cannot confirm that a same-size file is unchanged', () => {
+  const root = makeWorkspace({ 'a.md': 'a\n', 'big.bin': 'bbbb', 'grown.bin': 'gg' });
+  const now = takeSnapshot(new Workspace(root));
+  // 0.1.1 and earlier recorded files over 512 MiB by size alone
+  const old = { ...now, files: { ...now.files, 'big.bin': { size: 4, sha256: null }, 'grown.bin': { size: 1, sha256: null } } };
+  assert.ok(isSnapshot({ ...old, files: { 'x.bin': { size: 600 * 1024 * 1024, sha256: null } } }));
+  fs.writeFileSync(path.join(root, 'big.bin'), 'cccc');
+  // same size: no way to tell; a different size (grown.bin) is a change either way
+  assert.throws(() => runChecks('', new Workspace(root), { before: old, allowEmpty: true }),
+    (e) => e instanceof ScanError && /big\.bin/.test(e.message) && !/grown\.bin/.test(e.message) && /new snapshot/.test(e.message));
+  fs.writeFileSync(path.join(root, 'big.bin'), 'ccccc');
+  const res = runChecks('', new Workspace(root), { before: old, allowEmpty: true });
+  assert.deepEqual(byPath(res), { 'big.bin': 'unreported', 'grown.bin': 'unreported' });
+});
+
 test('ignored entries and empty directories do not exceed the scan limit', () => {
   const root = makeWorkspace({ a: 'a', z: 'ignored' });
   fs.mkdirSync(path.join(root, 'zz'));

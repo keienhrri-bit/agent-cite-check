@@ -222,6 +222,12 @@ test('extensionless examples in both READMEs and the format reference agree with
   }
 });
 
+test('spaces after a closing quote do not hide the excerpt, however many', () => {
+  const pad = ' '.repeat(2500);
+  const res = check({ 'n.md': 'alpha\n', tool: 'alpha\n' }, [`n.md:1 "alpha"${pad}`, `\`tool\`:1 "alpha"${pad}`, `n.md:1 "alpha"${pad}| next`].join('\n'), { minQuote: 1 });
+  assert.deepEqual(res.citations.items.map((i) => [i.file, i.quote, i.status]), [['n.md', 'alpha', 'ok'], ['tool', 'alpha', 'ok'], ['n.md', 'alpha', 'ok']]);
+});
+
 test('a long line with many inner quotes respects the excerpt limit', () => {
   const inner = 'a"b '.repeat(600);
   const report = 'one.md:1 "' + inner + 'end"\ntwo.md:2 "valid excerpt"';

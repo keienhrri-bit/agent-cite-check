@@ -63,7 +63,7 @@ File changes 3: 1 match the report, 2 do not
 
 ## Install
 
-You need Node.js 20 or newer. There is nothing to build. Open-file verification uses procfs on Linux, system Perl on macOS, and Windows PowerShell with the Windows handle API on Windows. If the handle cannot be verified, the read fails.
+You need Node.js 20 or newer. There is nothing to build, and no other program is started to read files.
 
 - **From GitHub onto PATH**: `npm install -g github:keienhrri-bit/agent-cite-check`, then `agent-cite-check ...`
 - **Run from a clone**: `node <clone>/bin/agent-cite-check.js ...`, or `npm install -g <clone>` to put it on PATH

@@ -101,6 +101,7 @@ const round2 = (x) => Math.round(x * 100) / 100;
 export function verifyCitation(c, ws, opts) {
   if (!c.file) return { status: 'missing_file', detail: { reason: 'no file' } };
   const r = ws.resolve(c.file);
+  if (r.how === 'unreadable') return { status: 'unreadable', detail: { reason: 'unreadable' } };
   if (!r.abs.length) return { status: 'missing_file', ...(r.how === 'outside' ? { detail: { reason: 'outside_root' } } : {}) };
   const results = [];
   for (const abs of r.abs) {

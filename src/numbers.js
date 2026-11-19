@@ -120,6 +120,36 @@ export function toNumber(v) {
   return Number(s);
 }
 
+/**
+ * Exact value of a number as toNumber() reads it: { coef, scale } for coef / 10^scale (coef a
+ * bigint), or null when it is not a number or its exponent is out of all proportion.
+ */
+function toDecimal(v) {
+  let s = fold(String(v)).trim().replace(/%$/, '');
+  if (/^[-+]?\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) s = s.replace(/,/g, '');
+  const m = /^([-+]?)(?:(\d+)\.?(\d*)|\.(\d+))(?:e([-+]?\d+))?$/i.exec(s);
+  if (!m) return null;
+  const frac = m[3] ?? m[4] ?? '';
+  const exp = Number(m[5] ?? 0);
+  if (Math.abs(exp) > 1000) return null;
+  let coef = BigInt((m[2] ?? '') + frac);
+  let scale = frac.length - exp;
+  if (scale < 0) { coef *= 10n ** BigInt(-scale); scale = 0; }
+  return { coef: m[1] === '-' ? -coef : coef, scale };
+}
+
+/**
+ * Sum of numeric cells, added as decimals: 0.1 + 0.2 - 0.3 is 0, not 5.55e-17. Falls back to
+ * floating point only for exponents beyond ±1000, which are infinite or zero as numbers anyway.
+ */
+function decimalSum(values) {
+  const decs = values.map(toDecimal);
+  if (decs.some((d) => d === null)) return values.reduce((s, v) => s + toNumber(v), 0);
+  const scale = decs.reduce((m, d) => Math.max(m, d.scale), 0);
+  const total = decs.reduce((s, d) => s + d.coef * 10n ** BigInt(scale - d.scale), 0n);
+  return Number(`${total}e-${scale}`);
+}
+
 /** Decimal places a claim is written to: "81.5" → 1, "1.5e-3" → 4, "1e3" → 0. */
 function decimalsOf(str) {
   const s = fold(String(str)).trim().replace(/%$/, '');
@@ -222,7 +252,9 @@ function targetFiles(ws, arg) {
     return { files, glob: true };
   }
   const r = ws.resolve(p);
-  if (!r.abs.length) throw new CheckError(r.how === 'outside' ? `outside the root folder: ${p}` : `file not found: ${p}`);
+  if (!r.abs.length) {
+    throw new CheckError(r.how === 'outside' ? `outside the root folder: ${p}` : r.how === 'unreadable' ? `cannot read ${p}` : `file not found: ${p}`);
+  }
   if (r.abs.length > 1) throw new CheckError(`ambiguous file name: ${p} (${r.abs.map((a) => ws.show(a)).join(', ')})`);
   return { files: r.abs, glob: false };
 }
@@ -295,19 +327,21 @@ export function evaluate(n, ws, opts = {}) {
   }
   if (op === 'rows' || op === 'count') return rowCount;
   if (op === 'distinct') return new Set(values.map((v) => fold(v).trim())).size;
-  const nums = values.map(toNumber).filter((x) => !Number.isNaN(x));
+  const numeric = values.filter((v) => !Number.isNaN(toNumber(v)));
+  const nums = numeric.map(toNumber);
   if (!nums.length) throw new CheckError(`no numeric values in column "${column}"`);
-  if (op === 'sum') return nums.reduce((s, x) => s + x, 0);
-  if (op === 'avg') return nums.reduce((s, x) => s + x, 0) / nums.length;
+  if (op === 'sum') return decimalSum(numeric);
+  if (op === 'avg') return decimalSum(numeric) / nums.length;
   if (op === 'min') return minOf(nums);
   if (op === 'max') return maxOf(nums);
   throw new CheckError(`unknown operation ${op}`);
 }
 
 /**
- * Compare at the precision the agent wrote. Whole numbers must match exactly (only float noise
- * from summing decimals is forgiven). "81.5", and avg() at any precision, must be a rounding of
- * the actual value: within half a unit of the last digit written.
+ * Compare at the precision the agent wrote. Whole numbers must match exactly; for a sum computed
+ * in floating point (sum() itself adds decimals exactly), noise far below one integer step is
+ * forgiven. "81.5", and avg() at any precision, must be a rounding of the actual value: within
+ * half a unit of the last digit written.
  */
 export function sameNumber(claimedStr, actual, op) {
   const claimed = toNumber(claimedStr);
@@ -316,9 +350,8 @@ export function sameNumber(claimedStr, actual, op) {
   if (claimed === 0 && /[1-9]/.test(mantissa)) return false;
   const dec = decimalsOf(claimedStr);
   if (!dec && op !== 'avg') {
-    if (Number.isInteger(actual)) return actual === claimed;
-    // Preserve the allowance for addition noise, bounded below one integer step.
-    return Math.abs(actual - claimed) <= Math.min(1e-9, Number.EPSILON * Math.abs(claimed));
+    if (Number.isInteger(actual) || op !== 'sum') return actual === claimed;
+    return Math.abs(actual - claimed) <= Math.min(1e-9, Number.EPSILON * Math.max(Math.abs(claimed), 1));
   }
   const [mant, exponent = '0'] = Math.abs(actual).toString().split('e');
   const places = (mant.split('.')[1]?.length ?? 0) - Number(exponent);
@@ -333,6 +366,7 @@ export function sameNumber(claimedStr, actual, op) {
 
 export function verifyNumber(n, ws, opts = {}) {
   if (!/\d/.test(n.claimed ?? '')) return { status: 'error', detail: { reason: 'no claimed value' } };
+  if (Number.isNaN(toNumber(n.claimed))) return { status: 'error', detail: { reason: `cannot read the claimed value ${n.claimed}` } };
   try {
     const actual = evaluate(n, ws, opts);
     const rounded = Math.round(actual * 1e6) / 1e6;

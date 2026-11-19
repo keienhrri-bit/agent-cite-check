@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.1.2 (2026-11-19)
+
+### Performance
+
+- Windows and macOS: confirming where an opened file is no longer starts a process for each file (Windows PowerShell with `Add-Type`, or Perl). On the test machine (Windows 11, Node 24), checking a report with 32 citations of 32 files took 13.4–14.4 s with 0.1.1 and takes 0.20–0.22 s now, start-up included; a snapshot of 1,000 files went from 14.2 s to 0.9 s, with identical records. A locked-down PowerShell (Constrained Language Mode) or security software that blocks it no longer makes every citation unreadable.
+
+### Security
+
+- An opened file is checked in this process. Before the open, the object at the file's canonical path is recorded; after it, the canonical path must still lie inside the root and hold the object the descriptor holds (device and inode, the NTFS file ID on Windows, compared as 64-bit integers). Any failure counts as `outside_root`. On Linux the descriptor's own path is also read from procfs when it is mounted.
+- Folder listings and link targets are read between two checks of the folder, the root included: a folder swapped for a link elsewhere during the read, and left so, is reported as a scan problem and its entries are dropped. Before, only a check before the read was made, and none for the root.
+
+### Fixes
+
+- Change check: files over 512 MiB are hashed like every other file (read in 1 MiB pieces). Before, they were recorded by size alone, so an edit that kept the length was missed. With a snapshot from 0.1.1 or earlier, a file recorded without a digest that still has the same size stops the check (exit code 2): take a new snapshot.
+- A root reached through a link or another spelling (macOS `/var` is `/private/var`): a link inside it that points at the canonical absolute path, and an absolute path written in the canonical spelling, are inside the root. Before, they were refused as outside.
+- A path that cannot be looked up (a folder without search permission, a link loop) fails its own item: a citation is `unreadable`, a number expression is an `error`, a Files entry is `phantom` with `unreadable: true`. Before, it stopped the whole check.
+- Numbers: `sum()` and `avg()` add decimals exactly, so a correct `0` for `0.1 + 0.2 - 0.3` passes. Only a floating-point sum is forgiven float noise: `max()` of `1.0000000000000002` no longer matches `1`.
+- Numbers: the claimed value is read whole. A malformed value (`1e2e3`, `1.2.3`, `1,2345`, `1e+`) is an `error` item; before, it disappeared from the report, was read as its first digits, or was a `mismatch`. A period or comma right after the value (`= 12.`) ends the sentence and is not part of it.
+- Sources: any number of spaces may follow a closing straight quote before the line ends or a separator comes; the 2,000-character limit applies to the excerpt only. Before, an excerpt followed by more than 2,000 spaces was lost.
+- Snapshot: a file whose check fails is named itself. Before, a failure in a batch of 32 files was reported for the first file of the batch.
+
+### Known issues
+
+- Windows and macOS: the checks after the open look the file up by path again. A process that swaps a folder on the way to a file for a link to a folder outside the root, and back, several times, each swap landing in the microseconds between two of the checks, could still get the outside file read. On Linux, procfs names the open descriptor itself, which rules this out. 0.1.1 asked Windows and macOS for the descriptor's path too, at the cost above.
+- Folder listings and link targets are still read by path. Names from outside the root can enter the file index, or a link target can be recorded in a snapshot, only if a folder is swapped for a link and back while it is being read.
+
+### Other
+
+- Benchmark unchanged: 576 of 624 planted problems flagged, 0 of 630 benign variants.
+
 ## 0.1.1 (2026-11-19)
 
 ### Security
