@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.1 (2026-11-17)
+## 0.1.1 (2026-11-19)
 
 ### Security
 
@@ -32,6 +32,7 @@
 ### Known issues
 
 - Windows: before a cited file is read, a short PowerShell call confirms where the opened handle points. This adds about 0.35 s per cited file (32 citations took 12 s instead of 0.1 s on the test machine). A faster check is planned.
+- Folder listings and link targets are still read by path. If another process swaps a folder for a link while a scan runs, names from outside the root can enter the file index, or a link target can be recorded in a snapshot. File contents are read only through verified handles.
 
 ### Other
 
