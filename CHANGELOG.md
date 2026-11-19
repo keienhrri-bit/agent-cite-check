@@ -29,6 +29,10 @@
 - Malformed and out-of-range exponents cannot pass. Decimal midpoint ties round away from zero.
 - English extraction template: the snapshot is passed to the check with `--before`, not `-o`.
 
+### Known issues
+
+- Windows: before a cited file is read, a short PowerShell call confirms where the opened handle points. This adds about 0.35 s per cited file (32 citations took 12 s instead of 0.1 s on the test machine). A faster check is planned.
+
 ### Other
 
 - PATH launchers `bin/agent-cite-check.cmd` and `bin/agent-cite-check`. The Claude Code plugin puts `bin/` on PATH; on Windows a bare `agent-cite-check` resolved to `agent-cite-check.js` and was opened by Windows Script Host instead of Node. Exit codes pass through both launchers.
